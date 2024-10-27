@@ -1,0 +1,11 @@
+# Move to your C:\Users\<username>\ in case of RAM leakage when building image
+
+# Settings apply across all Linux distros running on WSL 2
+[wsl2]
+
+# Limits VM memory to use no more than 4 GB, this can be set as whole numbers using GB or MB
+memory=10GB # set ~30% of your total memory <- !!!! IMPORTANT
+
+# Enable experimental features
+[experimental]
+autoMemoryReclaim=gradual

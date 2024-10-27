@@ -51,7 +51,8 @@ def analyze_voice(file_path):
     plot_formants(formants)
 
 # Przykład użycia
-file_path1 = "Fusion power plant plant reaches major milestone.wav" #Średnia f0: 112.89 Hz
-file_path2 = "10 films that could win Oscars in 2025.wav" #Średnia f0: 121.85 Hz
-file_path3 = "Amazon cuts hundreds of jobs in cloud business.wav" #Średnia f0: 111.25 Hz
+dir_path = "/app/Resources/audio_samples/"
+file_path1 = f"{dir_path}Fusion power plant plant reaches major milestone.wav" #Średnia f0: 112.89 Hz
+file_path2 = f"{dir_path}10 films that could win Oscars in 2025.wav" #Średnia f0: 121.85 Hz
+file_path3 = f"{dir_path}Amazon cuts hundreds of jobs in cloud business.wav" #Średnia f0: 111.25 Hz
 analyze_voice(file_path3)

@@ -24,15 +24,34 @@ gpt_cond_latent_cienki, speaker_embedding_cienki = model.get_conditioning_latent
 mid_latent = torch.lerp(gpt_cond_latent_gruby, gpt_cond_latent_cienki, 0.5)
 mid_embedding = torch.lerp(speaker_embedding_gruby, speaker_embedding_cienki, 0.5)
 
+# for i in range(10):
+#     print(f"Interpolating {i/10}")
+#     mid_latent = torch.rand(1, 32, 1024)
+#     mid_embedding = torch.rand(1, 512, 1)
+#     out = model.inference(
+#         "Jestem klonem głosu. Mówię ciekawe rzeczy i można mnie dostosować",
+#         "pl",
+#         mid_latent,
+#         speaker_embedding_cienki,
+#         #temperature=0.7, # Add custom parameters here
+#     )
+#     torchaudio.save(f"results/xtts_latent_random_embedding_cienki_{i}.wav", torch.tensor(out["wav"]).unsqueeze(0), 24000)
+
+# Kmeans
+# 1 faza - glosy reprezentatywne
+print(type(mid_latent))
+print(mid_latent.shape)
+print(type(mid_embedding))
+print(mid_embedding.shape)
 print("Inference...")
 out = model.inference(
     "Jestem klonem głosu. Mówię ciekawe rzeczy i można mnie dostosować",
     "pl",
-    mid_latent,
-    speaker_embedding_gruby,
+    gpt_cond_latent_cienki,
+    speaker_embedding_cienki,
     #temperature=0.7, # Add custom parameters here
 )
-torchaudio.save("xtts_latent_both_embedding_gruby.wav", torch.tensor(out["wav"]).unsqueeze(0), 24000)
+torchaudio.save("xtts_latent_cienki_emb_gruby.wav", torch.tensor(out["wav"]).unsqueeze(0), 24000)
 
 # spróbować zmienić model na najnowszą wersję
 # sprawdzić która metoda łączenia najmniej traci na jakości

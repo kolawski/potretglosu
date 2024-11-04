@@ -11,7 +11,11 @@ RUN apt-get update && \
 #--------------------------------------
 # Install python packages
 RUN pip install \
-    praat-parselmouth==0.4.5
+    dask==2022.12.1 \
+    dash==2.18.1 \
+    plotly==5.24.1 \
+    praat-parselmouth==0.4.5 \
+    pyarrow==10.0.1
     
 #--------------------------------------
 # Clean up

@@ -1,5 +1,6 @@
 import dash
 from dash import dcc, html, Input, Output
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
@@ -11,13 +12,13 @@ class DataVisualizer:
         self._app = None
 
     @staticmethod
-    def create_3d_scatter(df, column_key, title):
+    def create_3d_scatter(df, column_key, title, color_map):
             fig = go.Figure(data=[go.Scatter3d(
                 x=[coords[0] for coords in df[column_key]],
                 y=[coords[1] for coords in df[column_key]],
                 z=[coords[2] for coords in df[column_key]],
                 mode='markers',
-                marker=dict(size=5, color='blue', opacity=0.8),
+                marker=dict(size=5, opacity=0.8, color=[color_map[path] for path in df[SAMPLE_PATH_KEY]]),
                 text=df[SAMPLE_PATH_KEY],  # Sample_path wyświetlany po najechaniu
                 hoverinfo='text'
             )])
@@ -28,18 +29,20 @@ class DataVisualizer:
         # Inicjalizacja aplikacji Dash
         self._app = dash.Dash(__name__)
 
+        color_map = {path: f'rgba({np.random.randint(0, 255)}, {np.random.randint(0, 255)}, {np.random.randint(0, 255)}, 0.8)' for path in self._df[SAMPLE_PATH_KEY]}
+
         self._app.layout = html.Div([
             html.H1("3D t-SNE Visualization"),
             # Sekcja dla embedding_tsne
             html.Div([
                 html.H3("Embedding t-SNE"),
-                dcc.Graph(id='embedding-tsne', figure=self.create_3d_scatter(self._df, EMBEDDING_TSNE_KEY, "Embedding t-SNE"))
+                dcc.Graph(id='embedding-tsne', figure=self.create_3d_scatter(self._df, EMBEDDING_TSNE_KEY, "Embedding t-SNE", color_map))
             ], style={'width': '48%', 'display': 'inline-block', 'padding': '0 20'}),
 
             # Sekcja dla latent_tsne
             html.Div([
                 html.H3("Latent t-SNE"),
-                dcc.Graph(id='latent-tsne', figure=self.create_3d_scatter(self._df, LATENT_TSNE_KEY, "Latent t-SNE"))
+                dcc.Graph(id='latent-tsne', figure=self.create_3d_scatter(self._df, LATENT_TSNE_KEY, "Latent t-SNE", color_map))
             ], style={'width': '48%', 'display': 'inline-block', 'padding': '0 20'}),
 
             # Sekcja wyświetlająca ścieżkę do pliku po kliknięciu

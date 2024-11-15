@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import librosa
+import numpy as np
 import soundfile as sf
 
 from utils.exceptions import VoiceModifierError
@@ -16,6 +17,16 @@ def audio_to_vec_librosa(sample_path):
     if not Path(sample_path).is_file():
         raise VoiceModifierError(f"Audio file {sample_path} does not exist")
     return librosa.load(sample_path, sr=None)
+
+def normalize_audio(audio):
+    """Normalizes the audio signal to the range [-1, 1].
+
+    :param audio: The input audio signal as a NumPy array.
+    :type audio: numpy.ndarray
+    :return: The normalized audio signal.
+    :rtype: numpy.ndarray
+    """
+    return audio / np.max(np.abs(audio))
     
 def vec_to_audio_librosa(audio_vector, sr, path_to_save):
     """Converts an audio vector to an audio file and saves it using the librosa library.

@@ -11,11 +11,13 @@ RUN apt-get update && \
 #--------------------------------------
 # Install python packages
 RUN pip install \
+    crepe==0.0.16 \
     dask==2022.12.1 \
     dash==2.18.1 \
     plotly==5.24.1 \
     praat-parselmouth==0.4.5 \
-    pyarrow==10.0.1
+    pyarrow==10.0.1 \
+    tensorflow==2.11.0
     
 #--------------------------------------
 # Clean up

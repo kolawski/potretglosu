@@ -52,7 +52,7 @@ class EmbeddingDatabaseManager:
         """
         return self._dd.copy()
 
-    def add_data(self, embedding, latent, sample_path):
+    def add_data(self, embedding, latent, sample_path, parameters):
         """Adds new data to the database
 
         :param embedding: speaker embedding (XTTS)
@@ -74,7 +74,7 @@ class EmbeddingDatabaseManager:
             LATENT_KEY: [latent_np],
             AUDIO_KEY: [audio_vector],
             SR_KEY: [sr]
-        })
+        } | parameters)
 
         self._dd = dd.concat([self._dd, dd.from_pandas(new_data, npartitions=1)], axis=0) # TODO co robi axis=0 i npartitions=1 w sumie też
 

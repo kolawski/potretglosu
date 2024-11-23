@@ -5,6 +5,7 @@ import dask.dataframe as dd
 import pandas as pd
 import pyarrow as pa
 
+from database_management.database_managers.database_manager import DatabaseManager
 from database_management.utils.database_manager_utils import initialize_dataframe, read_from_parquet
 from settings import EMBEDDINGS_DB
 from utils.audio_sample_converter import audio_to_vec_librosa
@@ -16,7 +17,7 @@ SR_KEY = "sr"
 EMBEDDING_KEY = "embedding"
 LATENT_KEY = "latent"
 
-class EmbeddingDatabaseManager:
+class EmbeddingDatabaseManager(DatabaseManager):
     def __init__(self, db_path=EMBEDDINGS_DB):
         """Constructor
 
@@ -43,15 +44,6 @@ class EmbeddingDatabaseManager:
         else:
             print(f"Reading database from {self._db_path}")
             self._dd = read_from_parquet(self._db_path)
-
-    @property
-    def dd(self):
-        """Returns copy of the contained Dask DataFrame
-
-        :return: Dask DataFrame
-        :rtype: dask.dataframe.core.DataFrame
-        """
-        return self._dd.copy()
 
     def add_data(self, embedding, latent, sample_path):
         """Adds new data to the database
@@ -129,8 +121,4 @@ class EmbeddingDatabaseManager:
         :return: unique values for a key, defaults to EMBEDDING_KEY
         :rtype: pandas.Series, optional
         """
-        return self._dd[key].compute()
-
-    def save_to_parquet(self):
-        """Saves the database to a Parquet file"""
-        self._dd.to_parquet(self._db_path, engine='pyarrow', schema=self._schema, write_index=True)
+        return super().get_all_values_from_column(key)

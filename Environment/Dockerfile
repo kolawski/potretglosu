@@ -17,6 +17,7 @@ RUN pip install \
     plotly==5.24.1 \
     praat-parselmouth==0.4.5 \
     pyarrow==10.0.1 \
+    seaborn==0.13.2 \
     tensorflow==2.11.0
     
 #--------------------------------------
@@ -39,3 +40,5 @@ FROM ${BASE}
 ARG RESOURCES_DIR=/image_resources
 COPY --from=builder /usr/local/lib/python3.10/dist-packages /usr/local/lib/python3.10/dist-packages
 COPY --from=builder ${RESOURCES_DIR} ${RESOURCES_DIR}
+
+RUN export PYTHONPATH=/app:$PYTHONPATH

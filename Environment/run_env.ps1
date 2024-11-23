@@ -6,7 +6,7 @@ try {
     $containerDirectory = "/app"
 
     $containerName = "voice-reproduction-container"
-    $runCommand = "docker run --rm -it --gpus all -p 8050:8050 --entrypoint /bin/bash -v `"$hostDirectory`:$containerDirectory`" -w `"$containerDirectory`" --name $containerName $imageName"
+    $runCommand = "docker run --rm -it --memory=16g --memory-swap=16g --gpus all -p 8050:8050 --entrypoint /bin/bash -v `"$hostDirectory`:$containerDirectory`" -w `"$containerDirectory`" --name $containerName $imageName"
     & cmd /c $runCommand
 
 } catch {

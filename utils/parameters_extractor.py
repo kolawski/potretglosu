@@ -31,8 +31,61 @@ SPECTRAL_CENTROID_KEY = 'spectral_centroid'
 SPECTRAL_BANDWIDTH_KEY = 'spectral_bandwidth'
 SPECTRAL_FLATNESS_KEY = 'spectral_flatness'
 SPECTRAL_ROLL_OFF_KEY = 'spectral_roll_off'
-TONNETZ_KEY = 'tonnetz'
+TONNETZ_FIFTH_X_KEY = 'tonnetz_fifth_x'
+TONNETZ_FIFTH_Y_KEY = 'tonnetz_fifth_y'
+TONNETZ_MINOR_X_KEY = 'tonnetz_minor_x'
+TONNETZ_MINOR_Y_KEY = 'tonnetz_minor_y'
+TONNETZ_MAJOR_X_KEY = 'tonnetz_major_x'
+TONNETZ_MAJOR_Y_KEY = 'tonnetz_major_y'
+CHROMA_C_KEY= 'chroma_c'
+CHROMA_C_SHARP_KEY = 'chroma_c_sharp'
+CHROMA_D_KEY = 'chroma_d'
+CHROMA_D_SHARP_KEY = 'chroma_d_sharp'
+CHROMA_E_KEY = 'chroma_e'
+CHROMA_F_KEY = 'chroma_f'
+CHROMA_F_SHARP_KEY = 'chroma_f_sharp'
+CHROMA_G_KEY = 'chroma_g'
+CHROMA_G_SHARP_KEY = 'chroma_g_sharp'
+CHROMA_A_KEY = 'chroma_a'
+CHROMA_A_SHARP_KEY = 'chroma_a_sharp'
+CHROMA_B_KEY = 'chroma_b'
 TEMPO_KEY = 'tempo'
+
+ALL_KEYS = (
+    F0_KEY,
+    GENDER_KEY,
+    VARIANCE_KEY,
+    SKEWNESS_KEY,
+    KURTOSIS_KEY,
+    INTENSITY_KEY,
+    JITTER_KEY,
+    SHIMMER_KEY,
+    HNR_KEY,
+    ZERO_CROSSING_RATE_KEY,
+    SPECTRAL_CENTROID_KEY,
+    SPECTRAL_BANDWIDTH_KEY,
+    SPECTRAL_FLATNESS_KEY,
+    SPECTRAL_ROLL_OFF_KEY,
+    TONNETZ_FIFTH_X_KEY,
+    TONNETZ_FIFTH_Y_KEY,
+    TONNETZ_MINOR_X_KEY,
+    TONNETZ_MINOR_Y_KEY,
+    TONNETZ_MAJOR_X_KEY,
+    TONNETZ_MAJOR_Y_KEY,
+    CHROMA_C_KEY,
+    CHROMA_C_SHARP_KEY,
+    CHROMA_D_KEY,
+    CHROMA_D_SHARP_KEY,
+    CHROMA_E_KEY,
+    CHROMA_F_KEY,
+    CHROMA_F_SHARP_KEY,
+    CHROMA_G_KEY,
+    CHROMA_G_SHARP_KEY,
+    CHROMA_A_KEY,
+    CHROMA_A_SHARP_KEY,
+    CHROMA_B_KEY,
+    TEMPO_KEY,
+)
 
 
 class ParametersExtractor:
@@ -147,19 +200,45 @@ class ParametersExtractor:
 
     @ensure_audio_sample_initialized
     def get_spectral_roll_off(self):
-        return round(np.mean(librosa.feature.spectral_rolloff(y=self._librosa_audio, sr=self._sr, roll_percent=ROLL_PERCENT), axis=1)[0], 4)
+        return round(np.mean(librosa.feature.spectral_rolloff(y=self._librosa_audio, sr=self._sr, roll_percent=ROLL_PERCENT), axis=1)[0], 4) # TODO: czy branie tutaj tych współrzędnych zerowych jest dobre?
 
     # needs numpy 1.23.0
     @ensure_audio_sample_initialized
     def get_tonnetz(self):
         harmonic = librosa.effects.harmonic(self._librosa_audio)
-        return round(np.mean(librosa.feature.tonnetz(y=harmonic, sr=self._sr), axis=1)[0], 4)
+        tonnetz = librosa.feature.tonnetz(y=harmonic, sr=self._sr)
+        fifth_x = round(np.mean(tonnetz[0]), 4)
+        fifth_y = round(np.mean(tonnetz[1]), 4)
+        minor_x = round(np.mean(tonnetz[2]), 4)
+        minor_y = round(np.mean(tonnetz[3]), 4)
+        major_x = round(np.mean(tonnetz[4]), 4)
+        major_y = round(np.mean(tonnetz[5]), 4)
+
+        return fifth_x, fifth_y, minor_x, minor_y, major_x, major_y
 
     # needs numpy 1.23.0
     @ensure_audio_sample_initialized
     def get_tempo(self):
         onset_env = librosa.onset.onset_strength(y=self._librosa_audio, sr=self._sr)
         return librosa.feature.tempo(onset_envelope=onset_env, sr=self._sr)[0]
+    
+    @ensure_audio_sample_initialized
+    def get_chroma(self):
+        chroma = librosa.feature.chroma_cqt(y=self._librosa_audio, sr=self._sr)
+        chroma_c = round(np.mean(chroma[0]), 4)
+        chroma_c_sharp = round(np.mean(chroma[1]), 4)
+        chroma_d = round(np.mean(chroma[2]), 4)
+        chroma_d_sharp = round(np.mean(chroma[3]), 4)
+        chroma_e = round(np.mean(chroma[4]), 4)
+        chroma_f = round(np.mean(chroma[5]), 4)
+        chroma_f_sharp = round(np.mean(chroma[6]), 4)
+        chroma_g = round(np.mean(chroma[7]), 4)
+        chroma_g_sharp = round(np.mean(chroma[8]), 4)
+        chroma_a = round(np.mean(chroma[9]), 4)
+        chroma_a_sharp = round(np.mean(chroma[10]), 4)
+        chroma_b = round(np.mean(chroma[11]), 4)
+
+        return chroma_c, chroma_c_sharp, chroma_d, chroma_d_sharp, chroma_e, chroma_f, chroma_f_sharp, chroma_g, chroma_g_sharp, chroma_a, chroma_a_sharp, chroma_b
 
     @initialize_and_deinitialize_audio_sample
     def extract_parameters(self, file_path):
@@ -178,6 +257,27 @@ class ParametersExtractor:
         results[SPECTRAL_BANDWIDTH_KEY] = self.get_spectral_bandwidth()
         results[SPECTRAL_FLATNESS_KEY] = self.get_spectral_flatness()
         results[SPECTRAL_ROLL_OFF_KEY] = self.get_spectral_roll_off()
-        results[TONNETZ_KEY] = self.get_tonnetz()
+        fifth_x, fifth_y, minor_x, minor_y, major_x, major_y = self.get_tonnetz()
+        results[TONNETZ_FIFTH_X_KEY] = fifth_x
+        results[TONNETZ_FIFTH_Y_KEY] = fifth_y
+        results[TONNETZ_MINOR_X_KEY] = minor_x
+        results[TONNETZ_MINOR_Y_KEY] = minor_y
+        results[TONNETZ_MAJOR_X_KEY] = major_x
+        results[TONNETZ_MAJOR_Y_KEY] = major_y
+        chroma_c, chroma_c_sharp, chroma_d, chroma_d_sharp, chroma_e, chroma_f, \
+            chroma_f_sharp, chroma_g, chroma_g_sharp, chroma_a, \
+            chroma_a_sharp, chroma_b = self.get_chroma()
+        results[CHROMA_C_KEY] = chroma_c
+        results[CHROMA_C_SHARP_KEY] = chroma_c_sharp
+        results[CHROMA_D_KEY] = chroma_d
+        results[CHROMA_D_SHARP_KEY] = chroma_d_sharp
+        results[CHROMA_E_KEY] = chroma_e
+        results[CHROMA_F_KEY] = chroma_f
+        results[CHROMA_F_SHARP_KEY] = chroma_f_sharp
+        results[CHROMA_G_KEY] = chroma_g
+        results[CHROMA_G_SHARP_KEY] = chroma_g_sharp
+        results[CHROMA_A_KEY] = chroma_a
+        results[CHROMA_A_SHARP_KEY] = chroma_a_sharp
+        results[CHROMA_B_KEY] = chroma_b
         results[TEMPO_KEY] = self.get_tempo()
         return results

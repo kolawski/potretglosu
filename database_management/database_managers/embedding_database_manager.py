@@ -8,7 +8,6 @@ import pyarrow as pa
 from database_management.database_managers.database_manager import DatabaseManager
 from database_management.utils.database_manager_utils import initialize_dataframe, read_from_parquet
 from settings import EMBEDDINGS_DB
-from utils.audio_sample_converter import audio_to_vec_librosa
 from utils.embedding_converter import retrieve_to_flat
 
 AUDIO_KEY = "audio"
@@ -29,15 +28,15 @@ class EmbeddingDatabaseManager(DatabaseManager):
             SAMPLE_PATH_KEY: 'str',
             EMBEDDING_KEY: 'object',
             LATENT_KEY: 'object',
-            AUDIO_KEY: 'object',
-            SR_KEY: 'int64',
+            # AUDIO_KEY: 'object',
+            # SR_KEY: 'int64',
         }
         self._schema = pa.schema([
             (SAMPLE_PATH_KEY, pa.string()),
             (EMBEDDING_KEY, pa.list_(pa.float32())),
-            (LATENT_KEY, pa.list_(pa.float32())),
-            (AUDIO_KEY, pa.list_(pa.float32())),
-            (SR_KEY, pa.int64())
+            (LATENT_KEY, pa.list_(pa.float32()))
+            # (AUDIO_KEY, pa.list_(pa.float32())),
+            # (SR_KEY, pa.int64())
         ])
         if not Path(self._db_path).exists():
             self._dd = initialize_dataframe(self._dtypes)
@@ -59,14 +58,14 @@ class EmbeddingDatabaseManager(DatabaseManager):
         """
         
         embedding_np, latent_np = retrieve_to_flat(embedding, latent)
-        audio_vector, sr = audio_to_vec_librosa(sample_path)
+        # audio_vector, sr = audio_to_vec_librosa(sample_path)
 
         new_data = pd.DataFrame({
             SAMPLE_PATH_KEY: [sample_path],
             EMBEDDING_KEY: [embedding_np],
             LATENT_KEY: [latent_np],
-            AUDIO_KEY: [audio_vector],
-            SR_KEY: [sr]
+            # AUDIO_KEY: [audio_vector],
+            # SR_KEY: [sr]
         })
 
         self._dd = dd.concat([self._dd, dd.from_pandas(new_data, npartitions=1)], axis=0)

@@ -14,16 +14,18 @@ from settings import PARAMETERS_DB
 SAMPLE_PATH_KEY = "path"
 
 class ParametersDatabaseManager(DatabaseManager):
-    def __init__(self, db_path=PARAMETERS_DB):
+    def __init__(self, db_path=PARAMETERS_DB, keys=ALL_KEYS):
         """Constructor
 
         :param db_path: path to a database file, defaults to PARAMETERS_DB
         :type db_path: str, optional
+        :param keys: list of parameter keys to be included in the database (float parameters), defaults to ALL_KEYS
+        :type keys: list
         """
         self._db_path = db_path
-        self._dtypes = {key: 'float64' for key in ALL_KEYS}
+        self._dtypes = {SAMPLE_PATH_KEY: 'str', **{key: 'float64' for key in keys}}
 
-        self._schema = pa.schema([(key, pa.float64()) for key in ALL_KEYS])
+        self._schema = pa.schema([(SAMPLE_PATH_KEY, pa.string())] + [(key, pa.float64()) for key in keys])
         if not Path(self._db_path).exists():
             self._dd = initialize_dataframe(self._dtypes)
         else:

@@ -1,45 +1,43 @@
-# from data_visualizer import DataVisualizer
-# from tsne_database_manager import TsneDatabaseManager
-from utils.parameters_extractor import ParametersExtractor
+# from test_scripts.parameters_comparators.different_phrases_comparator import DifferentPhrasesComparator
+# from test_scripts.parameters_comparators.different_inferences_comparator import DifferentInterfacesComparator
+# from test_scripts.parameters_comparators.same_embedding_different_latents_comparator import SameEmbeddingsDifferentLatentsComparator
+# from test_scripts.parameters_comparators.same_latent_different_embeddings_comparator import SameLatentDifferentEmbeddingsComparator
 
-#najpierw odpalić add_to_embedding_db.py (a wcześniej to ją i tsne usunąć)
-# potem tsne manager, żeby policzył swoją
-#no i visualizer
+# # jeszcze wcześniej znowu utworzyć bazę wszystkich parametrów na nowo
+# # i odpalić histogram generator na niej
 
-# tsne_man = TsneDatabaseManager()
+# # comparator = DifferentPhrasesComparator(iterations=100)
+# # comparator.run_comparison()
 
-# dv = DataVisualizer()
+# # comparator = DifferentInterfacesComparator(iterations=100)
+# # comparator.run_comparison()
 
-# dv.visualize()
+# # comparator = SameEmbeddingsDifferentLatentsComparator(iterations=100)
+# # comparator.run_comparison()
 
-############################################
+# comparator = SameLatentDifferentEmbeddingsComparator(iterations=100)
+# comparator.run_comparison()
 
-ext = ParametersExtractor()
+##########
 
-dir_path = "/app/Resources/ready_audio_samples/"
-file_path1 = f"{dir_path}common_voice_pl_21643510.wav"
-file_path2 = f"{dir_path}common_voice_pl_20606171.wav"
-file_path3 = f"{dir_path}common_voice_pl_20613853.wav"
+from embedding_modifier.data_generator import DataGenerator
+from embedding_modifier.parameters_retriever import ParametersRetriever
 
-files = [file_path1, file_path2, file_path3]
+# dobra trzeba jakoś zrobić żeby się pobierały do modelu tylko te parametry, które on tam ma ustalone
+# W TYM CELU TRZEBA PRZETESTOWAĆ jak działają parameters retriever i data generator
 
-for file in files:
-    res = ext.extract_parameters(file)
-    print(f"{file}: {res}")
+data_generator = DataGenerator()
+parameters_retriever = ParametersRetriever()
 
-############################################
+for _ in range(3):
+    params = data_generator.random_parameters()
+    print(params)
+    print("/n")
 
-# import opensmile
+embedding, latent = data_generator.random_embedding_latent()
+params = parameters_retriever.retrieve_parameters(embedding, latent)
 
-# # Utwórz instancję OpenSMILE
-# smile = opensmile.Smile(
-#     feature_set=opensmile.FeatureSet.emobase
-#     # feature_level=opensmile.FeatureLevel.Functionals
-# )
-
-# # Przetwórz plik audio i wyświetl dostępne kolumny
-# features = smile.process_file(file_path1)
-# print(features.columns)
+print(f"Params from embedding and latent: {params}")
 
 
 

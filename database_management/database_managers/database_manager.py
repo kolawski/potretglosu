@@ -1,6 +1,8 @@
 """Abstract parent class dor some database managers"""
 from abc import ABC, abstractmethod
 
+import numpy as np
+
 
 class DatabaseManager(ABC):
     @abstractmethod
@@ -23,7 +25,7 @@ class DatabaseManager(ABC):
         :return: Dask DataFrame
         :rtype: dask.dataframe.core.DataFrame
         """
-        return self._dd.copy()
+        return self._dd # TODO przemyślec czy copy czy nie copy
 
     @abstractmethod
     def add_data(self):
@@ -37,7 +39,43 @@ class DatabaseManager(ABC):
         :rtype: pandas.Series
         """
         return self._dd[key].compute()
+    
+    def get_fake_record(self):  #TODO przetestować
+        """Select a random row from each column in the partition and return it as a dictionary.
 
-    def save_to_parquet(self):
-        """Saves the database to a Parquet file"""
-        self._dd.to_parquet(self._db_path, engine='pyarrow', schema=self._schema, write_index=True)
+        This method iterates over each column in the Dask DataFrame `_dd`, computes the column to bring it into memory,
+        and then selects a random element from each column. The selected elements are combined into a dictionary.
+
+        :return: A dictionary containing randomly selected elements from each column in the partition.
+        :rtype: dict
+        """
+        return {col: np.random.choice(self._dd[col].compute()) for col in self._dd.columns}
+    
+    def get_random_record(self):
+        """Returns a random record from the database
+
+        :return: random record
+        :rtype: pandas.Series
+        """
+        #TODO: do przetestowania - wydaje się ok
+        return self._dd.sample(frac=1).compute().sample(n=1).iloc[0]
+    
+    def repartition(self, partitions):
+        """Repartitions the database
+
+        :param partitions: number of partitions
+        :type partitions: int
+        """
+        self._dd = self._dd.repartition(npartitions=partitions)
+
+    def save_to_parquet(self, path=None):
+        """Saves the database to a Parquet file
+
+        :param path: path to save the Parquet file, defaults to the database path
+        :type path: str, optional
+        """
+        if path is None:
+            path = self._db_path
+
+        self._dd.to_parquet(path, engine='pyarrow', schema=self._schema) # TODO write_index=True?
+        print(f"Saved database to {path}")

@@ -17,8 +17,7 @@ RUN pip install \
     plotly==5.24.1 \
     praat-parselmouth==0.4.5 \
     pyarrow==10.0.1 \
-    seaborn==0.13.2 \
-    tensorflow==2.11.0
+    seaborn==0.13.2
     
 #--------------------------------------
 # Clean up

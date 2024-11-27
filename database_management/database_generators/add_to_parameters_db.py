@@ -24,6 +24,7 @@ for sample_path in file_paths:
     db_manager.add_data(sample_path, parameters)
     progress_bar.update(1)
 
+db_manager.repartition(30)
 db_manager.save_to_parquet()
 
 print(db_manager._dd.compute().head())

@@ -14,11 +14,12 @@ Path(HISTOGRAMS_SAVE_DIRECTORY_PATH).mkdir(parents=True, exist_ok=True)
 
 pdb = ParametersDatabaseManager()
 
+# keys = ["f0"]
 for key in ALL_KEYS:
     series = pdb.get_all_values_from_column(key)
     mean_value = series.mean()
     std_deviation = series.std()
-    title = f"{key}, \mu={mean_value:.2f}, \sigma={std_deviation:.2f}"
+    title = f"{key}, \mu={mean_value:.6f}, \sigma={std_deviation:.6f}"
     sns.histplot(data=series, bins='auto', kde=True, color="orange")
     plt.title(title)
     plt.savefig(HISTOGRAMS_SAVE_DIRECTORY_PATH + key + ".png")

@@ -1,9 +1,11 @@
 import numpy as np
 import torch
+
+from settings import DEVICE
 from utils.exceptions import VoiceModifierError
 
 
-def flat_to_torch(array, original_shape, device='cuda'):
+def flat_to_torch(array, original_shape, device=DEVICE):
     """Converts a flat numpy array to a torch tensor with the original shape and moves it to the specified device
 
     :param array: flat numpy array to be converted

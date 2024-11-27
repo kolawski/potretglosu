@@ -8,9 +8,9 @@ import plotly.graph_objects as go
 from database_management.database_managers.tsne_database_manager import (
     TsneDatabaseManager,
     EMBEDDING_TSNE_KEY,
-    LATENT_TSNE_KEY,
-    SAMPLE_PATH_KEY,
+    LATENT_TSNE_KEY
 )
+from settings import SAMPLE_PATH_DB_KEY
 
 
 class TsneVisualizer:
@@ -40,8 +40,8 @@ class TsneVisualizer:
                 y=[coords[1] for coords in df[column_key]],
                 z=[coords[2] for coords in df[column_key]],
                 mode='markers',
-                marker=dict(size=5, opacity=0.8, color=[color_map[path] for path in df[SAMPLE_PATH_KEY]]),
-                text=df[SAMPLE_PATH_KEY],  # Sample path displayed on hover
+                marker=dict(size=5, opacity=0.8, color=[color_map[path] for path in df[SAMPLE_PATH_DB_KEY]]),
+                text=df[SAMPLE_PATH_DB_KEY],  # Sample path displayed on hover
                 hoverinfo='text'
             )])
             fig.update_layout(title=title, margin=dict(l=0, r=0, b=0, t=40))
@@ -58,7 +58,7 @@ class TsneVisualizer:
         # Initialize the Dash application
         self._app = dash.Dash(__name__)
 
-        color_map = {path: f'rgba({np.random.randint(0, 255)}, {np.random.randint(0, 255)}, {np.random.randint(0, 255)}, 0.8)' for path in self._df[SAMPLE_PATH_KEY]}
+        color_map = {path: f'rgba({np.random.randint(0, 255)}, {np.random.randint(0, 255)}, {np.random.randint(0, 255)}, 0.8)' for path in self._df[SAMPLE_PATH_DB_KEY]}
 
         self._app.layout = html.Div([
             html.H1("3D t-SNE Visualization"),

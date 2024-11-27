@@ -1,54 +1,42 @@
 import os
 
+import numpy as np
 import torch
 from torch.utils.tensorboard import SummaryWriter
 import torch.nn as nn
 import torch.optim as optim
 
 from embedding_modifier.data_generator import DataGenerator
-from embedding_modifier.modifier_model import ModifierModel
-from embedding_modifier.parameters_retriever import ParametersRetriever
+from embedding_modifier.modifier_model import ModifierModel, CHOSEN_PARAMETERS_KEYS
+from embedding_modifier.parameters_retriever import ParametersRetriever, prepare_parameters
 from settings import DEVICE, MODEL_CHECKPOINT_PATH, EMBEDDING_SHAPE, LATENT_SHAPE
 from utils.embedding_converter import flat_to_torch
-from utils.parameters_extractor import (
-    F0_KEY,
-    GENDER_KEY,
-    SKEWNESS_KEY,
-    JITTER_KEY,
-    SHIMMER_KEY,
-    HNR_KEY,
-    VOICED_SEGMENTS_PER_SECOND_KEY,
-    MEAN_VOICED_SEGMENTS_LENGTH_KEY,
-    F0_FLUCTUATIONS_KEY,
-    F1_KEY,
-    F2_KEY,
-    F3_KEY
-)
 
-CHOSEN_PARAMETERS_KEYS = [F0_KEY, GENDER_KEY, SKEWNESS_KEY, JITTER_KEY, \
-                           SHIMMER_KEY, HNR_KEY, VOICED_SEGMENTS_PER_SECOND_KEY, \
-                            MEAN_VOICED_SEGMENTS_LENGTH_KEY, F0_FLUCTUATIONS_KEY, \
-                                F1_KEY, F2_KEY, F3_KEY]
 LEARNING_RATE = 0.003
 
+
 class ModelTrainer:
-    def __init__(self):
+    def __init__(self, tensor_board=True):
         self.writer = SummaryWriter("runs/modifier_model")
         self.model = ModifierModel()
         self.model.to(DEVICE)
-        print(f"Model device: {self.model.device}")
         self.optimizer = optim.Adam(self.model.parameters(), lr=LEARNING_RATE)
         self.data_gen = DataGenerator()
         self.parameters_retriever = ParametersRetriever()
+        if tensor_board:
+            self._run_tensor_board()
 
-    def _get_only_chosen_parameters(self, parameters):
-        return {key: parameters[key] for key in CHOSEN_PARAMETERS_KEYS}
+    def __del__(self):
+        self.writer.close()
 
     def _run_tensor_board(self):
-        os.system("tensorboard --logdir=runs --port=8050 &")
+        os.system("tensorboard --logdir=/app/runs --host=0.0.0.0 --port=8050 &")
 
     def loss_function(self, modified_embedding, modified_latent, original_embedding, original_latent, original_parameters):
         predicted_parameters = self.parameters_retriever.retrieve_parameters(modified_embedding, modified_latent)
+        predicted_parameters = prepare_parameters(predicted_parameters, CHOSEN_PARAMETERS_KEYS)
+        # TODO: pierwsza próbka jest tak zła, że: [None 0.17 9.4464 nan nan nan 0.0 0.0 0.0 0.0 0.0 0.0]
+        # albo zmapować none/nan na jakieś bardzo złe wartości, albo jakiś pretraining z innym lossem i inputem na początek
 
         # Strata parametrów
         param_loss = nn.MSELoss()(predicted_parameters, original_parameters)
@@ -89,12 +77,11 @@ class ModelTrainer:
 
             # Pobierz dane
             embedding, latent = self.data_gen.random_embedding_latent()
-            parameters = self._get_only_chosen_parameters(self.data_gen.random_parameters())
+            parameters = prepare_parameters(self.data_gen.random_parameters(), CHOSEN_PARAMETERS_KEYS)
 
             # ONE OD RAZU TUTAJ IDĄ DO CUDA - CZY TAK JEST OK?
             embedding = flat_to_torch(embedding, EMBEDDING_SHAPE)
             latent = flat_to_torch(latent, LATENT_SHAPE)
-            parameters = flat_to_torch(parameters, len(CHOSEN_PARAMETERS_KEYS))
 
             # Forward pass
             modified_embedding, modified_latent = self.model(parameters, embedding, latent)
@@ -110,8 +97,11 @@ class ModelTrainer:
 
             # Logowanie do TensorBoard
             self.writer.add_scalar("Loss/train", loss.item(), epoch)
+            self.writer.flush()
 
             # Wyświetlanie logów
             if epoch % 10 == 0:
                 print(f"Epoch {epoch}, Loss: {loss.item()}")
                 self.save_model(epoch)
+
+        print("Finished training")

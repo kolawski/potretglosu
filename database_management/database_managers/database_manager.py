@@ -60,6 +60,18 @@ class DatabaseManager(ABC):
         #TODO: do przetestowania - wydaje się ok
         return self._dd.sample(frac=1).compute().sample(n=1).iloc[0]
     
+    def get_record_by_key(self, key, value):
+        """Returns a record from the database with a given key-value pair
+
+        :param key: key to search for
+        :type key: str
+        :param value: value to search for
+        :type value: any
+        :return: record with the given key-value pair
+        :rtype: pandas.Series
+        """
+        return self._dd[self._dd[key] == value].compute().iloc[0]
+    
     def repartition(self, partitions):
         """Repartitions the database
 

@@ -7,11 +7,10 @@ import pyarrow as pa
 
 from database_management.database_managers.database_manager import DatabaseManager
 from database_management.utils.database_manager_utils import initialize_dataframe, read_from_parquet
-from settings import EMBEDDINGS_DB
+from settings import EMBEDDINGS_DB, SAMPLE_PATH_DB_KEY
 from utils.embedding_converter import retrieve_to_flat
 
 AUDIO_KEY = "audio"
-SAMPLE_PATH_KEY = "path"
 SR_KEY = "sr"
 EMBEDDING_KEY = "embedding"
 LATENT_KEY = "latent"
@@ -25,14 +24,14 @@ class EmbeddingDatabaseManager(DatabaseManager):
         """
         self._db_path = db_path
         self._dtypes = {
-            SAMPLE_PATH_KEY: 'str',
+            SAMPLE_PATH_DB_KEY: 'str',
             EMBEDDING_KEY: 'object',
             LATENT_KEY: 'object',
             # AUDIO_KEY: 'object',
             # SR_KEY: 'int64',
         }
         self._schema = pa.schema([
-            (SAMPLE_PATH_KEY, pa.string()),
+            (SAMPLE_PATH_DB_KEY, pa.string()),
             (EMBEDDING_KEY, pa.list_(pa.float32())),
             (LATENT_KEY, pa.list_(pa.float32()))
             # (AUDIO_KEY, pa.list_(pa.float32())),
@@ -61,7 +60,7 @@ class EmbeddingDatabaseManager(DatabaseManager):
         # audio_vector, sr = audio_to_vec_librosa(sample_path)
 
         new_data = pd.DataFrame({
-            SAMPLE_PATH_KEY: [sample_path],
+            SAMPLE_PATH_DB_KEY: [sample_path],
             EMBEDDING_KEY: [embedding_np],
             LATENT_KEY: [latent_np],
             # AUDIO_KEY: [audio_vector],
@@ -88,7 +87,7 @@ class EmbeddingDatabaseManager(DatabaseManager):
             latent_np = retrieve_to_flat(latent)
             df = df[df[LATENT_KEY] != latent_np]
         if sample_path is not None:
-            df = df[df[SAMPLE_PATH_KEY] != sample_path]
+            df = df[df[SAMPLE_PATH_DB_KEY] != sample_path]
         self._dd = df
 
     def filter_data(self, embedding=None, latent=None, sample_path=None):
@@ -111,7 +110,7 @@ class EmbeddingDatabaseManager(DatabaseManager):
             latent_np = retrieve_to_flat(latent)
             df = df[df[LATENT_KEY] == latent_np]
         if sample_path is not None:
-            df = df[df[SAMPLE_PATH_KEY] == sample_path]
+            df = df[df[SAMPLE_PATH_DB_KEY] == sample_path]
         return df.compute()
     
     def get_all_values_from_column(self, key=EMBEDDING_KEY):

@@ -8,10 +8,8 @@ import pyarrow as pa
 from database_management.utils.database_manager_utils import initialize_dataframe, read_from_parquet
 from database_management.database_managers.database_manager import DatabaseManager
 from utils.parameters_extractor import ALL_KEYS
-from settings import PARAMETERS_DB
+from settings import PARAMETERS_DB, SAMPLE_PATH_DB_KEY
 
-
-SAMPLE_PATH_KEY = "path"
 
 class ParametersDatabaseManager(DatabaseManager):
     def __init__(self, db_path=PARAMETERS_DB, keys=ALL_KEYS):
@@ -23,9 +21,9 @@ class ParametersDatabaseManager(DatabaseManager):
         :type keys: list
         """
         self._db_path = db_path
-        self._dtypes = {SAMPLE_PATH_KEY: 'str', **{key: 'float64' for key in keys}}
+        self._dtypes = {SAMPLE_PATH_DB_KEY: 'str', **{key: 'float64' for key in keys}}
 
-        self._schema = pa.schema([(SAMPLE_PATH_KEY, pa.string())] + [(key, pa.float64()) for key in keys])
+        self._schema = pa.schema([(SAMPLE_PATH_DB_KEY, pa.string())] + [(key, pa.float64()) for key in keys])
         if not Path(self._db_path).exists():
             self._dd = initialize_dataframe(self._dtypes)
         else:
@@ -42,7 +40,7 @@ class ParametersDatabaseManager(DatabaseManager):
         """
         
         new_data = pd.DataFrame({
-            SAMPLE_PATH_KEY: [sample_path],
+            SAMPLE_PATH_DB_KEY: [sample_path],
             **parameters
         })
 

@@ -17,27 +17,3 @@
 
 # comparator = SameLatentDifferentEmbeddingsComparator(iterations=100)
 # comparator.run_comparison()
-
-##########
-
-from embedding_modifier.data_generator import DataGenerator
-from embedding_modifier.parameters_retriever import ParametersRetriever
-
-# dobra trzeba jakoś zrobić żeby się pobierały do modelu tylko te parametry, które on tam ma ustalone
-# W TYM CELU TRZEBA PRZETESTOWAĆ jak działają parameters retriever i data generator
-
-data_generator = DataGenerator()
-parameters_retriever = ParametersRetriever()
-
-for _ in range(3):
-    params = data_generator.random_parameters()
-    print(params)
-    print("/n")
-
-embedding, latent = data_generator.random_embedding_latent()
-params = parameters_retriever.retrieve_parameters(embedding, latent)
-
-print(f"Params from embedding and latent: {params}")
-
-
-

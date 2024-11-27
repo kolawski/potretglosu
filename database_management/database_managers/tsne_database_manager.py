@@ -7,10 +7,9 @@ from sklearn.manifold import TSNE
 
 from database_management.database_managers.embedding_database_manager import EmbeddingDatabaseManager
 from database_management.utils.database_manager_utils import read_from_parquet
-from settings import TSNE_DB
+from settings import TSNE_DB, SAMPLE_PATH_DB_KEY
 
 
-SAMPLE_PATH_KEY = "path"
 EMBEDDING_TSNE_KEY = "embedding_tsne"
 LATENT_TSNE_KEY = "latent_tsne"
 
@@ -53,7 +52,7 @@ class TsneDatabaseManager:
         latent_tsne = tsne.fit_transform(latent_np)
 
         tsne_df = pd.DataFrame({
-            SAMPLE_PATH_KEY: _dd[SAMPLE_PATH_KEY].compute(),
+            SAMPLE_PATH_DB_KEY: _dd[SAMPLE_PATH_DB_KEY].compute(),
             EMBEDDING_TSNE_KEY: embedding_tsne.tolist(),
             LATENT_TSNE_KEY: latent_tsne.tolist()
         })
@@ -61,7 +60,7 @@ class TsneDatabaseManager:
         new_dd = dd.from_pandas(tsne_df, npartitions=_dd.npartitions)
 
         new_schema = pa.schema([
-            (SAMPLE_PATH_KEY, pa.string()),
+            (SAMPLE_PATH_DB_KEY, pa.string()),
             (EMBEDDING_TSNE_KEY, pa.list_(pa.float32())),
             (LATENT_TSNE_KEY, pa.list_(pa.float32()))
         ])
@@ -77,7 +76,7 @@ class TsneDatabaseManager:
         :return: The sample path corresponding to the given t-SNE embedding.
         :rtype: Any
         """
-        return self._dd[self._dd[EMBEDDING_TSNE_KEY] == embedding_tsne][SAMPLE_PATH_KEY].compute()
+        return self._dd[self._dd[EMBEDDING_TSNE_KEY] == embedding_tsne][SAMPLE_PATH_DB_KEY].compute()
     
     def get_path_from_latent_tsne(self, latent_tsne):
         """
@@ -87,4 +86,4 @@ class TsneDatabaseManager:
         :return: The sample path associated with the given latent t-SNE value.
         :rtype: str
         """
-        return self._dd[self._dd[LATENT_TSNE_KEY] == latent_tsne][SAMPLE_PATH_KEY].compute()
+        return self._dd[self._dd[LATENT_TSNE_KEY] == latent_tsne][SAMPLE_PATH_DB_KEY].compute()

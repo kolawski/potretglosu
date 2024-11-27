@@ -10,3 +10,6 @@ EMBEDDING_SHAPE = [1, 512, 1]
 LATENT_SHAPE = [1, 32, 1024]
 MODEL_CHECKPOINT_PATH = "/app/Resources/model_files/checkpoint.pth"
 DEVICE = 'cuda'
+SAMPLE_PATH_DB_KEY = "path"
+
+# chosen parameters are set in embeding_modifier/modifier_model.py

@@ -1,11 +1,27 @@
 import numpy as np
 import torch
 
-from settings import DEVICE
+from settings import DEVICE, LATENT_SHAPE
 from utils.exceptions import VoiceModifierError
 
 
-def flat_to_torch(array, original_shape, device=DEVICE):
+def numpy_embedding_latent_to_short(embedding, latent):
+    """
+    Converts a latent representation to a short latent representation and concatenates it with the embedding.
+
+    :param embedding: The embedding to be concatenated with the short latent representation
+    :type embedding: np.ndarray
+    :param latent: The latent representation to be converted to a short latent representation
+    :type latent: np.ndarray
+    :return: The concatenated result of the short latent representation and the embedding
+    :rtype: np.ndarray
+    """
+    latent_reshaped = latent.reshape(LATENT_SHAPE)
+    latent_short = np.mean(latent_reshaped, axis=1).squeeze()
+    result = np.concatenate((latent_short, embedding))
+    return result
+
+def flat_to_torch(array, original_shape, device=DEVICE, requires_grad=False):
     """Converts a flat numpy array to a torch tensor with the original shape and moves it to the specified device
 
     :param array: flat numpy array to be converted
@@ -17,17 +33,9 @@ def flat_to_torch(array, original_shape, device=DEVICE):
     :return: torch tensor with the original shape
     :rtype: torch.Tensor
     """
-    # print(f"array_type: {type(array)}") # REM
-    # print(f"array_shape: {array.shape}")
-    # print(f"array: {array}")
-
-    # TODO: fix the warning
-    # /app/utils/embedding_converter.py:23: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors.
-    # This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it
-    # writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program.
-    # (Triggered internally at ../torch/csrc/utils/tensor_numpy.cpp:206.)
-
     tensor = torch.from_numpy(array).reshape(original_shape)
+    if requires_grad:
+        tensor = tensor.requires_grad_(True)
     return tensor.to(device)
 
 def is_flat_array(obj):

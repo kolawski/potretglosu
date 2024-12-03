@@ -1,19 +1,8 @@
-# from test_scripts.parameters_comparators.different_phrases_comparator import DifferentPhrasesComparator
-# from test_scripts.parameters_comparators.different_inferences_comparator import DifferentInterfacesComparator
-# from test_scripts.parameters_comparators.same_embedding_different_latents_comparator import SameEmbeddingsDifferentLatentsComparator
-# from test_scripts.parameters_comparators.same_latent_different_embeddings_comparator import SameLatentDifferentEmbeddingsComparator
+# Skrypt testowy Kuby do testowania różnych innych skryptów
 
-# # jeszcze wcześniej znowu utworzyć bazę wszystkich parametrów na nowo
-# # i odpalić histogram generator na niej
+from embedding_modifier.model_utils.data_generator import DataGenerator
+from embedding_modifier.models.model import CHOSEN_PARAMETERS_KEYS
 
-# # comparator = DifferentPhrasesComparator(iterations=100)
-# # comparator.run_comparison()
+data_generator = DataGenerator()
 
-# # comparator = DifferentInterfacesComparator(iterations=100)
-# # comparator.run_comparison()
-
-# # comparator = SameEmbeddingsDifferentLatentsComparator(iterations=100)
-# # comparator.run_comparison()
-
-# comparator = SameLatentDifferentEmbeddingsComparator(iterations=100)
-# comparator.run_comparison()
+data_generator.inference_parameters_datasets_tensors(CHOSEN_PARAMETERS_KEYS)

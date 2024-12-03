@@ -69,27 +69,6 @@ class EmbeddingDatabaseManager(DatabaseManager):
 
         self._dd = dd.concat([self._dd, dd.from_pandas(new_data, npartitions=1)], axis=0)
 
-    def delete_data(self, embedding=None, latent=None, sample_path=None):
-        """Deletes data from the database
-
-        :param embedding: speaker embedding (XTTS), defaults to None
-        :type embedding: torch.Tensor ([1, 512, 1]), optional # TODO or np.array
-        :param latent: GPT conditional latent (XTTS), defaults to None
-        :type latent: torch.Tensor ([1, 32, 1024]), optional
-        :param sample_path: path to an audio file, defaults to None
-        :type sample_path: str, optional
-        """
-        df = self._dd
-        if embedding is not None:
-            embedding_np = retrieve_to_flat(embedding)
-            df = df[df[EMBEDDING_KEY] != embedding_np]
-        if latent is not None:
-            latent_np = retrieve_to_flat(latent)
-            df = df[df[LATENT_KEY] != latent_np]
-        if sample_path is not None:
-            df = df[df[SAMPLE_PATH_DB_KEY] != sample_path]
-        self._dd = df
-
     def filter_data(self, embedding=None, latent=None, sample_path=None):
         """Returns filtered data from the database. Use only one kwarg at a function call.
 

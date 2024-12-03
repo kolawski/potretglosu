@@ -292,53 +292,109 @@ class ParametersExtractor:
         results = {}
         results[F0_KEY] = self.predict_f0()
         results[GENDER_KEY] = self.get_gender()
-        # results[VARIANCE_KEY] = self.get_variance()
+        results[VARIANCE_KEY] = self.get_variance()
         results[SKEWNESS_KEY] = self.get_skewness()
-        # results[KURTOSIS_KEY] = self.get_kurtosis()
-        # results[INTENSITY_KEY] = self.get_intensity()
+        results[KURTOSIS_KEY] = self.get_kurtosis()
+        results[INTENSITY_KEY] = self.get_intensity()
         results[JITTER_KEY] = self.get_jitter()
         results[SHIMMER_KEY] = self.get_shimmer()
         results[HNR_KEY] = self.get_hnr()
-        # results[ZERO_CROSSING_RATE_KEY] = self.get_zero_crossing_rate()
-        # results[SPECTRAL_CENTROID_KEY] = self.get_spectral_centroid()
-        # results[SPECTRAL_BANDWIDTH_KEY] = self.get_spectral_bandwidth()
-        # results[SPECTRAL_FLATNESS_KEY] = self.get_spectral_flatness()
-        # results[SPECTRAL_ROLL_OFF_KEY] = self.get_spectral_roll_off()
-        # fifth_x, fifth_y, minor_x, minor_y, major_x, major_y = self.get_tonnetz()
-        # results[TONNETZ_FIFTH_X_KEY] = fifth_x
-        # results[TONNETZ_FIFTH_Y_KEY] = fifth_y
-        # results[TONNETZ_MINOR_X_KEY] = minor_x
-        # results[TONNETZ_MINOR_Y_KEY] = minor_y
-        # results[TONNETZ_MAJOR_X_KEY] = major_x
-        # results[TONNETZ_MAJOR_Y_KEY] = major_y
-        # chroma_c, chroma_c_sharp, chroma_d, chroma_d_sharp, chroma_e, chroma_f, \
-        #     chroma_f_sharp, chroma_g, chroma_g_sharp, chroma_a, \
-        #     chroma_a_sharp, chroma_b = self.get_chroma()
-        # results[CHROMA_C_KEY] = chroma_c
-        # results[CHROMA_C_SHARP_KEY] = chroma_c_sharp
-        # results[CHROMA_D_KEY] = chroma_d
-        # results[CHROMA_D_SHARP_KEY] = chroma_d_sharp
-        # results[CHROMA_E_KEY] = chroma_e
-        # results[CHROMA_F_KEY] = chroma_f
-        # results[CHROMA_F_SHARP_KEY] = chroma_f_sharp
-        # results[CHROMA_G_KEY] = chroma_g
-        # results[CHROMA_G_SHARP_KEY] = chroma_g_sharp
-        # results[CHROMA_A_KEY] = chroma_a
-        # results[CHROMA_A_SHARP_KEY] = chroma_a_sharp
-        # results[CHROMA_B_KEY] = chroma_b
+        results[ZERO_CROSSING_RATE_KEY] = self.get_zero_crossing_rate()
+        results[SPECTRAL_CENTROID_KEY] = self.get_spectral_centroid()
+        results[SPECTRAL_BANDWIDTH_KEY] = self.get_spectral_bandwidth()
+        results[SPECTRAL_FLATNESS_KEY] = self.get_spectral_flatness()
+        results[SPECTRAL_ROLL_OFF_KEY] = self.get_spectral_roll_off()
+        fifth_x, fifth_y, minor_x, minor_y, major_x, major_y = self.get_tonnetz()
+        results[TONNETZ_FIFTH_X_KEY] = fifth_x
+        results[TONNETZ_FIFTH_Y_KEY] = fifth_y
+        results[TONNETZ_MINOR_X_KEY] = minor_x
+        results[TONNETZ_MINOR_Y_KEY] = minor_y
+        results[TONNETZ_MAJOR_X_KEY] = major_x
+        results[TONNETZ_MAJOR_Y_KEY] = major_y
+        chroma_c, chroma_c_sharp, chroma_d, chroma_d_sharp, chroma_e, chroma_f, \
+            chroma_f_sharp, chroma_g, chroma_g_sharp, chroma_a, \
+            chroma_a_sharp, chroma_b = self.get_chroma()
+        results[CHROMA_C_KEY] = chroma_c
+        results[CHROMA_C_SHARP_KEY] = chroma_c_sharp
+        results[CHROMA_D_KEY] = chroma_d
+        results[CHROMA_D_SHARP_KEY] = chroma_d_sharp
+        results[CHROMA_E_KEY] = chroma_e
+        results[CHROMA_F_KEY] = chroma_f
+        results[CHROMA_F_SHARP_KEY] = chroma_f_sharp
+        results[CHROMA_G_KEY] = chroma_g
+        results[CHROMA_G_SHARP_KEY] = chroma_g_sharp
+        results[CHROMA_A_KEY] = chroma_a
+        results[CHROMA_A_SHARP_KEY] = chroma_a_sharp
+        results[CHROMA_B_KEY] = chroma_b
         voiced_segments_per_second, mean_voiced_segments_length, \
             mean_unvoiced_segments_length, loudness_peaks_per_second, \
             f0_fluctuations, f1, f1_bandwidth, f2, f2_bandwidth, f3, f3_bandwidth = self.get_opensmile_params()
         results[VOICED_SEGMENTS_PER_SECOND_KEY] = voiced_segments_per_second
         results[MEAN_VOICED_SEGMENTS_LENGTH_KEY] = mean_voiced_segments_length
-        # results[MEAN_UNVOICED_SEGMENTS_LENGTH_KEY] = mean_unvoiced_segments_length
-        # results[LOUDNESS_PEAKS_PER_SECOND_KEY] = loudness_peaks_per_second
+        results[MEAN_UNVOICED_SEGMENTS_LENGTH_KEY] = mean_unvoiced_segments_length
+        results[LOUDNESS_PEAKS_PER_SECOND_KEY] = loudness_peaks_per_second
         results[F0_FLUCTUATIONS_KEY] = f0_fluctuations
         results[F1_KEY] = f1
-        # results[F1_BANDWIDTH_KEY] = f1_bandwidth
+        results[F1_BANDWIDTH_KEY] = f1_bandwidth
         results[F2_KEY] = f2
-        # results[F2_BANDWIDTH_KEY] = f2_bandwidth
+        results[F2_BANDWIDTH_KEY] = f2_bandwidth
         results[F3_KEY] = f3
-        # results[F3_BANDWIDTH_KEY] = f3_bandwidth
+        results[F3_BANDWIDTH_KEY] = f3_bandwidth
 
         return results
+    
+    # @initialize_and_deinitialize_audio_sample
+    # def extract_parameters(self, file_path):
+    #     results = {}
+    #     results[F0_KEY] = self.predict_f0()
+    #     results[GENDER_KEY] = self.get_gender()
+    #     # results[VARIANCE_KEY] = self.get_variance()
+    #     results[SKEWNESS_KEY] = self.get_skewness()
+    #     # results[KURTOSIS_KEY] = self.get_kurtosis()
+    #     # results[INTENSITY_KEY] = self.get_intensity()
+    #     results[JITTER_KEY] = self.get_jitter()
+    #     results[SHIMMER_KEY] = self.get_shimmer()
+    #     results[HNR_KEY] = self.get_hnr()
+    #     # results[ZERO_CROSSING_RATE_KEY] = self.get_zero_crossing_rate()
+    #     # results[SPECTRAL_CENTROID_KEY] = self.get_spectral_centroid()
+    #     # results[SPECTRAL_BANDWIDTH_KEY] = self.get_spectral_bandwidth()
+    #     # results[SPECTRAL_FLATNESS_KEY] = self.get_spectral_flatness()
+    #     # results[SPECTRAL_ROLL_OFF_KEY] = self.get_spectral_roll_off()
+    #     # fifth_x, fifth_y, minor_x, minor_y, major_x, major_y = self.get_tonnetz()
+    #     # results[TONNETZ_FIFTH_X_KEY] = fifth_x
+    #     # results[TONNETZ_FIFTH_Y_KEY] = fifth_y
+    #     # results[TONNETZ_MINOR_X_KEY] = minor_x
+    #     # results[TONNETZ_MINOR_Y_KEY] = minor_y
+    #     # results[TONNETZ_MAJOR_X_KEY] = major_x
+    #     # results[TONNETZ_MAJOR_Y_KEY] = major_y
+    #     # chroma_c, chroma_c_sharp, chroma_d, chroma_d_sharp, chroma_e, chroma_f, \
+    #     #     chroma_f_sharp, chroma_g, chroma_g_sharp, chroma_a, \
+    #     #     chroma_a_sharp, chroma_b = self.get_chroma()
+    #     # results[CHROMA_C_KEY] = chroma_c
+    #     # results[CHROMA_C_SHARP_KEY] = chroma_c_sharp
+    #     # results[CHROMA_D_KEY] = chroma_d
+    #     # results[CHROMA_D_SHARP_KEY] = chroma_d_sharp
+    #     # results[CHROMA_E_KEY] = chroma_e
+    #     # results[CHROMA_F_KEY] = chroma_f
+    #     # results[CHROMA_F_SHARP_KEY] = chroma_f_sharp
+    #     # results[CHROMA_G_KEY] = chroma_g
+    #     # results[CHROMA_G_SHARP_KEY] = chroma_g_sharp
+    #     # results[CHROMA_A_KEY] = chroma_a
+    #     # results[CHROMA_A_SHARP_KEY] = chroma_a_sharp
+    #     # results[CHROMA_B_KEY] = chroma_b
+    #     voiced_segments_per_second, mean_voiced_segments_length, \
+    #         mean_unvoiced_segments_length, loudness_peaks_per_second, \
+    #         f0_fluctuations, f1, f1_bandwidth, f2, f2_bandwidth, f3, f3_bandwidth = self.get_opensmile_params()
+    #     results[VOICED_SEGMENTS_PER_SECOND_KEY] = voiced_segments_per_second
+    #     results[MEAN_VOICED_SEGMENTS_LENGTH_KEY] = mean_voiced_segments_length
+    #     # results[MEAN_UNVOICED_SEGMENTS_LENGTH_KEY] = mean_unvoiced_segments_length
+    #     # results[LOUDNESS_PEAKS_PER_SECOND_KEY] = loudness_peaks_per_second
+    #     results[F0_FLUCTUATIONS_KEY] = f0_fluctuations
+    #     results[F1_KEY] = f1
+    #     # results[F1_BANDWIDTH_KEY] = f1_bandwidth
+    #     results[F2_KEY] = f2
+    #     # results[F2_BANDWIDTH_KEY] = f2_bandwidth
+    #     results[F3_KEY] = f3
+    #     # results[F3_BANDWIDTH_KEY] = f3_bandwidth
+
+    #     return results

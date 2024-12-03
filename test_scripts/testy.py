@@ -5,7 +5,8 @@ import torchaudio
 from TTS.tts.configs.xtts_config import XttsConfig
 from TTS.tts.models.xtts import Xtts
 
-SAMPLES_DIR = "/app/Resources/"
+RESULTS_DIR = "/app/results"
+SAMPLES_DIR = "/app/Resources/ready_audio_samples"
 MODEL_PATH = "/image_resources/models/XTTS-v2"  # Tylko do katalogu
 CONFIG_PATH = f"{MODEL_PATH}/config.json"
 
@@ -18,7 +19,11 @@ model.cuda()
 
 
 print("Computing speaker latents...")
-gpt_cond_latent_gruby, speaker_embedding_gruby = model.get_conditioning_latents(audio_path=[f"{SAMPLES_DIR}/different_f0_test/changed.wav"])
+gpt_cond_latent_gruby, speaker_embedding_gruby = model.get_conditioning_latents(audio_path=[f"{SAMPLES_DIR}/common_voice_pl_40006748.wav"])
+
+gpt_cond_latent_gruby = gpt_cond_latent_gruby.mean(dim=1, keepdim=True).repeat(1, 32, 1)
+# gpt_cond_latent_gruby = gpt_cond_latent_gruby[:, :2, :].repeat(1, 32, 1)
+
 # gpt_cond_latent_cienki, speaker_embedding_cienki = model.get_conditioning_latents(audio_path=[f"{SAMPLES_DIR}/refcienki.mp3"])
 
 # mid_latent = torch.lerp(gpt_cond_latent_gruby, gpt_cond_latent_cienki, 0.5)
@@ -51,7 +56,7 @@ out = model.inference(
     speaker_embedding_gruby,
     #temperature=0.7, # Add custom parameters here
 )
-torchaudio.save(f"{SAMPLES_DIR}/different_f0_test/changed_reXTTS.wav", torch.tensor(out["wav"]).unsqueeze(0), 24000)
+torchaudio.save(f"{RESULTS_DIR}/speaker_3_repeat_mean_2.wav", torch.tensor(out["wav"]).unsqueeze(0), 24000)
 
 # spróbować zmienić model na najnowszą wersję
 # sprawdzić która metoda łączenia najmniej traci na jakości

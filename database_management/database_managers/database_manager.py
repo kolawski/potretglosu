@@ -31,6 +31,18 @@ class DatabaseManager(ABC):
     def add_data(self):
         """Adds new data to the database"""
         pass
+
+    def delete_record_by_key(self, key, value):
+        """Returns a record from the database with a given key-value pair
+
+        :param key: key to search for
+        :type key: str
+        :param value: value to search for
+        :type value: any
+        :return: record with the given key-value pair
+        :rtype: pandas.Series
+        """
+        self._dd = self._dd[self._dd[key] != value]
     
     def get_all_values_from_column(self, key):
         """Returns all unique values for a key (ex. embeddings) from the database
@@ -50,6 +62,16 @@ class DatabaseManager(ABC):
         :rtype: dict
         """
         return {col: np.random.choice(self._dd[col].compute()) for col in self._dd.columns}
+    
+    def get_maximal_values(self, keys):
+        """Returns a dictionary with the highest values for each key in keys
+          :param keys: list of keys to search for
+          :type keys: list
+
+          :rtype: dict
+          :return: dictionary with the highest values for each key
+        """
+        return {key: self._dd[key].max().compute() for key in keys}
     
     def get_random_record(self):
         """Returns a random record from the database

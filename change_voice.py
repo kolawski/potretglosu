@@ -1,10 +1,8 @@
-from embedding_modifier.model_handler import ModelHandler
-from embedding_modifier.modifier_model import CHOSEN_PARAMETERS_KEYS
-from embedding_modifier.parameters_retriever import prepare_parameters
+from embedding_modifier.handlers.long_latent_model_handler import LongLatentModelHandler
+from embedding_modifier.handlers.parameters_to_short_latent_model_handler import ParametersToShortLatentModelHandler
 from database_management.database_managers.embedding_database_manager import EmbeddingDatabaseManager, EMBEDDING_KEY, LATENT_KEY
 from database_management.database_managers.parameters_database_manager import ParametersDatabaseManager
-from settings import SAMPLE_PATH_DB_KEY, EMBEDDING_SHAPE, LATENT_SHAPE
-from utils.embedding_converter import flat_to_torch
+from settings import SAMPLE_PATH_DB_KEY
 from utils.parameters_extractor import (
     ParametersExtractor,
     F0_KEY,
@@ -22,10 +20,11 @@ from utils.parameters_extractor import (
 )
 
 
-model_handler = ModelHandler()
+model_handler = ParametersToShortLatentModelHandler()
+# model_handler = LongLatentModelHandler()
 edb = EmbeddingDatabaseManager()
 pdb = ParametersDatabaseManager()
-extractor = ParametersExtractor()
+# extractor = ParametersExtractor()
 
 input_speaker_sample_path = "/app/Resources/ready_audio_samples/common_voice_pl_20606767.wav"
 
@@ -52,11 +51,15 @@ edb_record = edb.get_record_by_key(SAMPLE_PATH_DB_KEY, input_speaker_sample_path
 embedding = edb_record[EMBEDDING_KEY]
 latent = edb_record[LATENT_KEY]
 
+print(min(embedding), max(embedding))
+print(min(latent), max(latent))
+
+
 # Only parameters from embedding_modifier.modifier_model.py's CHOSEN_PARAMETERS_KEYS
 # will be concidered. All of them must be specified.
 expected_parameters = {
     F0_KEY: 180.0,
-    GENDER_KEY: 99.8,
+    GENDER_KEY: 0.8,
     SKEWNESS_KEY: 1.3087,
     JITTER_KEY: 0.0275,
     SHIMMER_KEY: 0.1291,
@@ -64,16 +67,17 @@ expected_parameters = {
     VOICED_SEGMENTS_PER_SECOND_KEY: 2.05696,
     MEAN_VOICED_SEGMENTS_LENGTH_KEY: 0.26153,
     F0_FLUCTUATIONS_KEY: 0.41846,
-    F1_KEY: 664.55,
-    F2_KEY: 1706.1,
-    F3_KEY: 2803.719,
+    F1_KEY: 864.55,
+    F2_KEY: 2706.1,
+    F3_KEY: 3203.719,
     }
 
-model_handler.generate_output(embedding, latent, expected_parameters, print_output_parameters=True)
+# model_handler.generate_output(embedding, latent, expected_parameters, print_output_parameters=True)
+model_handler.generate_output(expected_parameters, print_output_parameters=True)
 
-original_parameters = pdb.get_record_by_key(SAMPLE_PATH_DB_KEY, input_speaker_sample_path).to_dict()
-new_parameters = extractor.extract_parameters(input_speaker_sample_path)
+# original_parameters = pdb.get_record_by_key(SAMPLE_PATH_DB_KEY, input_speaker_sample_path).to_dict()
+# new_parameters = extractor.extract_parameters(input_speaker_sample_path)
 
-print(f"Original parameters: {original_parameters}\n")
-print(f"Expected parameters: {expected_parameters}\n")
-print(f"New parameters: {new_parameters}")
+# print(f"Original parameters: {original_parameters}\n")
+# print(f"Expected parameters: {expected_parameters}\n")
+# print(f"New parameters: {new_parameters}")

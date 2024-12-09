@@ -18,4 +18,3 @@ NORMALIZATION_DICT_PATH = "/app/Resources/configs/parameters_normalization_vecto
 NORMALIZATION_INFERENCE_PARAMS_DICT_PATH = "/app/Resources/configs/inference_parameters_normalization_vector.npz"
 
 
-# chosen parameters are set in embeding_modifier/modifier_model.py

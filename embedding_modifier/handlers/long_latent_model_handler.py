@@ -4,6 +4,7 @@ import numpy as np
 from embedding_modifier.handlers.model_handler import ModelHandler, DEFAULT_PATH, DEFAULT_PHRASE
 from embedding_modifier.models.long_latent_model import LongLatentModifierModel
 from embedding_modifier.models.model import CHOSEN_PARAMETERS_KEYS
+from embedding_modifier.model_utils.common import load_normalization_dict
 from embedding_modifier.model_utils.parameters_utils import prepare_parameters
 from settings import LONG_LATENT_MODEL_CHECKPOINT_DIR, EMBEDDING_SHAPE, LATENT_SHAPE, DEVICE, NORMALIZATION_DICT_PATH
 from utils.embedding_converter import flat_to_torch
@@ -12,10 +13,10 @@ from utils.parameters_extractor import ParametersExtractor
 
 
 class LongLatentModelHandler(ModelHandler):
-    def __init__(self, model_dir=LONG_LATENT_MODEL_CHECKPOINT_DIR, device=DEVICE,
+    def __init__(self, model_version="1", model_dir=LONG_LATENT_MODEL_CHECKPOINT_DIR, device=DEVICE,
                  normalization_dict_path=NORMALIZATION_DICT_PATH):
-        super().__init__(LongLatentModifierModel, model_dir, normalization_dict_path, device=device)
-        self.parameters_extractor = None
+        super().__init__(LongLatentModifierModel, model_version, model_dir, device=device)
+        self.parameters_noramlization_dict = load_normalization_dict(normalization_dict_path)
 
     def generate_output(self, input_embedding, input_latent, expected_parameters, path=DEFAULT_PATH, phrase=DEFAULT_PHRASE, print_output_parameters=False):
 
@@ -37,3 +38,5 @@ class LongLatentModelHandler(ModelHandler):
                 self.parameters_extractor = ParametersExtractor()
             output_parameters = self.parameters_extractor.extract_parameters(path)
             print(f"Output parameters: {output_parameters}")
+
+        return modified_embedding, modified_latent

@@ -1,0 +1,10 @@
+path,parameters_mse,short_latent_mse
+/app/results/change_voice_tests/male_108_to_160_C.wav,[0.010255507193505764],[3.492791175842285]
+/app/results/change_voice_tests/male_108_to_108_C.wav,[0.010819516144692898],[3.4837281703948975]
+/app/results/change_voice_tests/male_108_to_80_C.wav,[0.009439017623662949],[3.4789416790008545]
+/app/results/change_voice_tests/male_108_to_160_A_12.wav,[0.013977505266666412],"('-', '-')"
+/app/results/change_voice_tests/male_108_to_108_A_12.wav,[0.007947348058223724],"('-', '-')"
+/app/results/change_voice_tests/male_108_to_80_A_12.wav,[0.004284043330699205],"('-', '-')"
+/app/results/change_voice_tests/male_108_to_160_A_44.wav,[0.05630204826593399],"('-', '-')"
+/app/results/change_voice_tests/male_108_to_108_A_44.wav,[0.044887520372867584],"('-', '-')"
+/app/results/change_voice_tests/male_108_to_80_A_44.wav,[0.0369902029633522],"('-', '-')"

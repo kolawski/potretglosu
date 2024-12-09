@@ -21,7 +21,7 @@ def numpy_embedding_latent_to_short(embedding, latent):
     result = np.concatenate((latent_short, embedding))
     return result
 
-def flat_to_torch(array, original_shape, device=DEVICE, requires_grad=False):
+def flat_to_torch(array, original_shape=None, device=DEVICE, requires_grad=False):
     """Converts a flat numpy array to a torch tensor with the original shape and moves it to the specified device
 
     :param array: flat numpy array to be converted
@@ -33,7 +33,10 @@ def flat_to_torch(array, original_shape, device=DEVICE, requires_grad=False):
     :return: torch tensor with the original shape
     :rtype: torch.Tensor
     """
-    tensor = torch.from_numpy(array).reshape(original_shape)
+    if original_shape is None:
+        tensor = torch.from_numpy(array)
+    else:
+        tensor = torch.from_numpy(array).reshape(original_shape)
     if requires_grad:
         tensor = tensor.requires_grad_(True)
     return tensor.to(device)

@@ -5,4 +5,6 @@ from embedding_modifier.models.model import CHOSEN_PARAMETERS_KEYS
 
 data_generator = DataGenerator()
 
-data_generator.inference_parameters_datasets_tensors(CHOSEN_PARAMETERS_KEYS)
+tensors = data_generator.dimension_latents_dataset_tensors()
+print(tensors[0].shape)
+print(len(tensors[0][0]))

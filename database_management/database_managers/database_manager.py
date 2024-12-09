@@ -63,6 +63,14 @@ class DatabaseManager(ABC):
         """
         return {col: np.random.choice(self._dd[col].compute()) for col in self._dd.columns}
     
+    def get_number_of_records(self):
+        """Returns the number of records in the database
+
+        :return: number of records in the database
+        :rtype: int
+        """
+        return self._dd.shape[0].compute()
+    
     def get_maximal_values(self, keys):
         """Returns a dictionary with the highest values for each key in keys
           :param keys: list of keys to search for

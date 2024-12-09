@@ -5,3 +5,7 @@ pretrained_models/emotion_recognition/
 wav2vec2_checkpoints/
 *.so*
 runs/
+.vscode/
+*.wav
+# To be changed when finel checkpoints are chosen
+*.pth

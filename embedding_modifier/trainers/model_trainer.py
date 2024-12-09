@@ -9,7 +9,9 @@ from settings import DEVICE
 
 
 class ModelTrainer:
-    def __init__(self, model_type, tensor_board_logs_dir, tensor_board=True):
+    def __init__(self, model_type, tensor_board_logs_dir, tensor_board=True, model_version="1"):
+
+        tensor_board_logs_dir += f"/{model_version}"
 
         if not os.path.exists(tensor_board_logs_dir):
             os.makedirs(tensor_board_logs_dir)
@@ -22,6 +24,7 @@ class ModelTrainer:
             self._run_tensor_board()
 
         self.checkpoint_iteration = 1
+        self.model_version = model_version
 
     def __del__(self):
         self.writer.close()
@@ -30,7 +33,13 @@ class ModelTrainer:
         os.system("tensorboard --logdir=/app/runs --host=0.0.0.0 --port=8050 &")
 
     def save_model(self, epoch, dir):
-        dir = f"{dir}/checkpoint_{self.checkpoint_iteration}.pth"
+        dir = f"{dir}/{self.model_version}"
+
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+
+        dir += f"/checkpoint_{self.checkpoint_iteration}.pth"
+
         torch.save({
             'epoch': epoch,
             'model_state_dict': self.model.state_dict(),
@@ -39,6 +48,7 @@ class ModelTrainer:
         self.checkpoint_iteration += 1
 
     def load_model(self, dir):
+        dir = f"{dir}/{self.model_version}"
         path = find_latest_model_path(dir)
 
         checkpoint = torch.load(path)

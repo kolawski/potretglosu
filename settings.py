@@ -17,4 +17,6 @@ SAMPLE_PATH_DB_KEY = "path"
 NORMALIZATION_DICT_PATH = "/app/Resources/configs/parameters_normalization_vector.npz"
 NORMALIZATION_INFERENCE_PARAMS_DICT_PATH = "/app/Resources/configs/inference_parameters_normalization_vector.npz"
 
+SHARED_DIRECTORY_PATH = "/app/shared"
+VECTOR_SEARCHER_TEMP_WAV_PATH = f"{SHARED_DIRECTORY_PATH}/test.wav"
 

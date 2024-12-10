@@ -61,7 +61,6 @@ class XTTSHandler:
 
     def inference(self, embedding, latent, path=DEFAULT_PATH,
                   phrase=DEFAULT_PHRASE, sr=DEFAULT_SR):
-        print(f"Embedding shape: {embedding.shape}, latent shape: {latent.shape}") # REM
         if isinstance(embedding, np.ndarray):
             embedding = flat_to_torch(embedding, EMBEDDING_SHAPE)
         if isinstance(latent, np.ndarray):

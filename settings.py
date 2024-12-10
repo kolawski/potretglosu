@@ -1,5 +1,5 @@
 DEFAULT_SR = 22050 # to be adjusted, when audio samples are provided CURRENTLY NOT USED, BUT MAY BE USEFUL
-EMBEDDINGS_DB = "/app/Resources/databases/paths_embeddings_latents.parquet"
+EMBEDDINGS_DB = "/app/Resources/databases/paths_inference_embeddings_latents.parquet"
 TSNE_DB = "/app/Resources/databases/tsne.parquet"
 PARAMETERS_DB = "/app/Resources/databases/parameters.parquet"
 PARAMETERS_SHORT_LATENTS_DB = "/app/Resources/databases/parameters_short_latents.parquet"

@@ -13,11 +13,13 @@ def retrieve_metrics(vector_a, vector_b, get_ssim=True, get_m2e=True):
     output = []
     if get_ssim:
         ssim_val = ssim(vector_a.unsqueeze(1), vector_b.unsqueeze(1))
-        print(f"ssim: {ssim_val}")
+        # print(f"ssim: {ssim_val}")
         output.append(ssim_val.item())
     if get_m2e:
         m2e_val = torch.mean((vector_a - vector_b) ** 2)
-        print(f"m2e: {m2e_val}")
+        # print(f"m2e: {m2e_val}")
         output.append(m2e_val.item())
 
+    if len(output) == 1:
+        return output[0]
     return output

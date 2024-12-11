@@ -59,8 +59,21 @@ class XTTSHandler:
         self.xtts_model.cuda()
         print("Successfully loaded model")
 
-    def inference(self, embedding, latent, path=DEFAULT_PATH,
-                  phrase=DEFAULT_PHRASE, sr=DEFAULT_SR):
+    def inference(self, embedding, latent,
+                  path=DEFAULT_PATH,
+                  phrase=DEFAULT_PHRASE,
+                  sr=DEFAULT_SR,
+                  language="pl",
+                  # GPT inference
+                  temperature=0.7,
+                  length_penalty=1.0,
+                  repetition_penalty=10.0,
+                  top_k=50,
+                  top_p=0.85,
+                  do_sample=True,
+                  num_beams=1,
+                  speed=1.0,
+                  enable_text_splitting=False):
         if isinstance(embedding, np.ndarray):
             embedding = flat_to_torch(embedding, EMBEDDING_SHAPE)
         if isinstance(latent, np.ndarray):
@@ -68,10 +81,19 @@ class XTTSHandler:
         print("Inference...")
         out = self.xtts_model.inference(
             phrase,
-            "pl",
+            language,
             latent,
             embedding,
-            #temperature=0.7, # Add custom parameters here
+            # GPT inference
+            temperature=temperature,
+            length_penalty=length_penalty,
+            repetition_penalty=repetition_penalty,
+            top_k=top_k,
+            top_p=top_p,
+            do_sample=do_sample,
+            num_beams=num_beams,
+            speed=speed,
+            enable_text_splitting=enable_text_splitting
         )
         torchaudio.save(path, torch.tensor(out["wav"]).unsqueeze(0), sr)
 

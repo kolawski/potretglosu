@@ -1,10 +1,26 @@
 # Skrypt testowy Kuby do testowania różnych innych skryptów
 
-from embedding_modifier.model_utils.data_generator import DataGenerator
-from embedding_modifier.models.model import CHOSEN_PARAMETERS_KEYS
+from database_management.database_managers.embedding_database_manager import EmbeddingDatabaseManager, EMBEDDING_KEY, LATENT_KEY
+from database_management.database_managers.parameters_short_latents_database_manager import ParametersShortLatentsDatabaseManager
+from utils.parameters_extractor import GENDER_KEY
+from utils.xtts_handler import XTTSHandler
+from settings import SAMPLE_PATH_DB_KEY
 
-data_generator = DataGenerator()
+edb = EmbeddingDatabaseManager()
+psldb = ParametersShortLatentsDatabaseManager()
+# pomiędzy bazami danych trzeba przechodzić po ścieżkach - niestety trzeba przechowywać te ścieżki razem z embeddingami/latentami przy liczeniu
+# albo w słownikach, albo w osobnych obiektach utworzonej do tego celu dataclass
 
-tensors = data_generator.dimension_latents_dataset_tensors()
-print(tensors[0].shape)
-print(len(tensors[0][0]))
+random_record = edb.get_random_record()
+path = random_record[SAMPLE_PATH_DB_KEY]
+print(f"random path: {path}")
+embedding = random_record[EMBEDDING_KEY]
+latent = random_record[LATENT_KEY]
+
+gender_for_embedding = psldb.get_record_by_key(SAMPLE_PATH_DB_KEY, path)[GENDER_KEY]
+
+print(f"embedding: {embedding}, gender_for_embedding: {gender_for_embedding}")
+
+xtts = XTTSHandler()
+xtts.inference(embedding, latent, path=f"/app/results/other_tests/inference_parameters_test_default_1.wav")
+xtts.inference(embedding, latent, path=f"/app/results/other_tests/inference_parameters_test_speed_1_5.wav", speed=1.5)

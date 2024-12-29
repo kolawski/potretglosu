@@ -8,6 +8,9 @@ from settings import EMBEDDING_SHAPE, LATENT_SHAPE
 class LongLatentModifierModel(Model):
     def __init__(self, number_of_parameters=len(CHOSEN_PARAMETERS_KEYS)):
         super(LongLatentModifierModel, self).__init__()
+
+        self.name = "LongLatentModifierModel"
+
         # Warstwy dla embedding z uwzględnieniem parametrów (Conv1d zamiast Conv2d)
         self.embedding_transform = nn.Sequential(
             nn.Conv1d(512, 512, kernel_size=3, padding=1), # TODO: przemyśleć plusy 2D - czemu czat to sugeruje

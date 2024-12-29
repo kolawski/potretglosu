@@ -1,5 +1,6 @@
 """Abstract parent class dor some database managers"""
 from abc import ABC, abstractmethod
+import random
 
 import numpy as np
 
@@ -88,8 +89,8 @@ class DatabaseManager(ABC):
         :rtype: pandas.Series
         """
         #TODO: do przetestowania - wydaje się ok
-        return self._dd.sample(frac=1).compute().sample(n=1).iloc[0]
-    
+        return self._dd.compute().sample(n=1).iloc[0]
+
     def get_record_by_key(self, key, value):
         """Returns a record from the database with a given key-value pair
 

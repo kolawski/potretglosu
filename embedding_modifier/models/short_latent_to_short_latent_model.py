@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 from embedding_modifier.models.model import Model, CHOSEN_PARAMETERS_KEYS
-from settings import EMBEDDING_SHAPE, LATENT_SHAPE
+from settings import EMBEDDING_SHAPE, LATENT_SHAPE, SHORT_LATENT_SHAPE
 
 
 class SubModel(Model):
@@ -37,6 +37,9 @@ class ShortLatentToShortLatentModel(Model):
                  activation_fn=nn.ReLU, 
                  dropout=0.0):
         super(ShortLatentToShortLatentModel, self).__init__()
+
+        self.input_size = param_size + SHORT_LATENT_SHAPE[0]
+        self.name = "ShortLatentToShortLatentModel"
         
         # Podmodel dla latentu
         self.latent_model = SubModel(

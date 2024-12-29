@@ -12,20 +12,35 @@ class DimensionLatentToLatentModelHandler(ModelHandler):
     def __init__(self, model_version="1", model_dir=DIMENSION_LATENT_TO_LATENT_MODEL_CHECKPOINT_DIR, device=DEVICE):
         super().__init__(DimensionLatentToLatentModel, model_version, model_dir, device=device)
 
-    def generate_output(self, short_latent, path=DEFAULT_PATH, phrase=DEFAULT_PHRASE, print_output_parameters=False):
+    def generate_output(self,
+                        short_latent,
+                        path=DEFAULT_PATH,
+                        phrase=DEFAULT_PHRASE,
+                        return_output_parameters=False,
+                        # XTTS inference parameters
+                        temperature=0.7,
+                        length_penalty=1.0,
+                        repetition_penalty=10.0,
+                        top_k=50,
+                        top_p=0.85,
+                        do_sample=True,
+                        num_beams=1,
+                        speed=1.0,
+                        enable_text_splitting=False):
 
         recreated_latent, embedding = self.inference(short_latent, enforce_tensor_output=True)
 
-        print(f"Shape of recreated latent: {recreated_latent.shape}") # REM
+        self.xtts_handler.inference(embedding=embedding, latent=recreated_latent, path=path, phrase=phrase,
+                                    temperature=temperature, length_penalty=length_penalty,
+                                    repetition_penalty=repetition_penalty, top_k=top_k, top_p=top_p,
+                                    do_sample=do_sample, num_beams=num_beams, speed=speed,
+                                    enable_text_splitting=enable_text_splitting)
 
-        self.xtts_handler.inference(embedding, recreated_latent, phrase=phrase, path=path)
-        print(f"Output saved to {path}") # REM
-
-        if print_output_parameters:
+        if return_output_parameters:
             if self.parameters_extractor is None:
                 self.parameters_extractor = ParametersExtractor()
             output_parameters = self.parameters_extractor.extract_parameters(path)
-            print(f"Output parameters: {output_parameters}") # REM
+            return recreated_latent, embedding, output_parameters
 
         return recreated_latent, embedding
 

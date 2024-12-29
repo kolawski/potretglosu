@@ -1,64 +1,55 @@
-from database_management.database_managers.parameters_short_latents_database_manager import ParametersShortLatentsDatabaseManager, SHORT_LATENT_KEY
-from embedding_modifier.handlers.parameters_to_short_latent_model_handler import ParametersToShortLatentModelHandler
-from embedding_modifier.handlers.short_latent_to_short_latent_model_handler import ShortLatentToShortLatentModelHandler
-from settings import SAMPLE_PATH_DB_KEY
 from voice_modifier import VoiceModifier
+from utils.parameters_extractor import (
+    F0_FLUCTUATIONS_KEY,
+    F0_KEY,
+    F1_KEY,
+    F2_KEY,
+    F3_KEY,
+    GENDER_KEY,
+    HNR_KEY,
+    JITTER_KEY,
+    MEAN_VOICED_SEGMENTS_LENGTH_KEY,
+    SHIMMER_KEY,
+    SKEWNESS_KEY,
+    VOICED_SEGMENTS_PER_SECOND_KEY,
+    ALL_KEYS)
 
+modifier = VoiceModifier()
 
-psldb = ParametersShortLatentsDatabaseManager()
-basic_path = "/app/results/change_voice_tests/"
+parameters_from_path = modifier.retrieve_parameters_from_path("/app/Resources/ready_audio_samples/common_voice_pl_40314763.wav")
+# można też użyć funkcji retrieve_parameters_from_embedding_latent, ale wydajniej jest to zrobić ze ścieżki, bo wtedy pobiera parametry z
+# bazy, a nie je oblicza
 
-input_speaker_sample_path = "/app/Resources/ready_audio_samples/common_voice_pl_20606767.wav"
+print(f"Parameters from path: {parameters_from_path}")
 
-def retrieve_sh_latent_and_parameters_from_path(path):
-    record = psldb.get_record_by_key(SAMPLE_PATH_DB_KEY, path)
-    return record[SHORT_LATENT_KEY], record.to_dict()
+# {'path': '/app/Resources/ready_audio_samples/common_voice_pl_40314763.wav', 'f0': 231.42, 'male': 0.14,
+#                    'variance': 0.023399999365210533, 'skewness': 0.1394, 'kurtosis': 6.5924, 'intensity': 75.9948,
+#                    'jitter': 0.0283, 'shimmer': 0.1015, 'hnr': 12.6834, 'zero_crossing_rate': 0.2932,
+#                    'spectral_centroid': 2378.0788, 'spectral_bandwidth': 2085.0307, 'spectral_flatness': 0.0649000033736229,
+#                    'spectral_roll_off': 4390.5507, 'tonnetz_fifth_x': 0.0138, 'tonnetz_fifth_y': -0.004, 'tonnetz_minor_x': -0.0651,
+#                    'tonnetz_minor_y': -0.0456, 'tonnetz_major_x': -0.0004, 'tonnetz_major_y': 0.0149, 'chroma_c': 0.4846000075340271,
+#                    'chroma_c_sharp': 0.38449999690055847, 'chroma_d': 0.4108000099658966, 'chroma_d_sharp': 0.3977999985218048,
+#                    'chroma_e': 0.4027999937534332, 'chroma_f': 0.4025999903678894, 'chroma_f_sharp': 0.3898000121116638,
+#                    'chroma_g': 0.3968000113964081, 'chroma_g_sharp': 0.5189999938011169, 'chroma_a': 0.6820999979972839,
+#                    'chroma_a_sharp': 0.695900022983551, 'chroma_b': 0.6085000038146973, 'voiced_segments_per_second': 2.1156558990478516,
+#                    'mean_voiced_segments_length': 0.20266665518283844, 'mean_unvoiced_segments_length': 0.3100000023841858,
+#                    'loudness_peaks_per_second': 4.341736793518066, 'f0_fluctuations': 0.1841025948524475, 'f1': 664.439697265625,
+#                    'f1_bandwidth': 1085.020751953125, 'f2': 1821.8223876953125, 'f2_bandwidth': 831.6712646484375, 'f3': 2866.68310546875,
+#                    'f3_bandwidth': 719.1000366210938}
 
+parameters_from_path[F0_KEY] = 180.0
 
-new_parameters =  {'path': '/app/Resources/ready_audio_samples/common_voice_pl_20606767.wav', 
-                      'f0': 160.1, 'male': 99.88, 'variance': 0.006599999964237213, 'skewness': 1.3087,
-                      'kurtosis': 16.753, 'intensity': 71.4872, 'jitter': 0.0275, 'shimmer': 0.1291, 'hnr': 7.8215,
-                      'zero_crossing_rate': 0.1952, 'spectral_centroid': 3241.54, 'spectral_bandwidth': 2839.1392,
-                      'spectral_flatness': 0.049300000071525574, 'spectral_roll_off': 5951.286,
-                      'tonnetz_fifth_x': -0.0053, 'tonnetz_fifth_y': 0.0361, 'tonnetz_minor_x': 0.019,
-                      'tonnetz_minor_y': -0.0194, 'tonnetz_major_x': 0.0116, 'tonnetz_major_y': -0.0125,
-                      'chroma_c': 0.5601000189781189, 'chroma_c_sharp': 0.5078999996185303,
-                      'chroma_d': 0.4683000147342682, 'chroma_d_sharp': 0.46939998865127563,
-                      'chroma_e': 0.4422000050544739, 'chroma_f': 0.515500009059906,
-                      'chroma_f_sharp': 0.5041000247001648, 'chroma_g': 0.6205000281333923,
-                      'chroma_g_sharp': 0.6198999881744385, 'chroma_a': 0.5618000030517578,
-                      'chroma_a_sharp': 0.614300012588501, 'chroma_b': 0.5916000008583069,
-                      'voiced_segments_per_second': 2.056962013244629, 'mean_voiced_segments_length': 0.26153847575187683,
-                      'mean_unvoiced_segments_length': 0.21583333611488342, 'loudness_peaks_per_second': 3.7676610946655273,
-                      'f0_fluctuations': 0.4184642434120178, 'f1': 664.5595703125, 'f1_bandwidth': 1096.8245849609375,
-                      'f2': 1706.19677734375, 'f2_bandwidth': 760.7246704101562, 'f3': 2803.71923828125,
-                      'f3_bandwidth': 697.6337890625}
-
-# modifier = VoiceModifier(ShortLatentToShortLatentModelHandler, model_version="7")
-
-# short_latent, _ = retrieve_sh_latent_and_parameters_from_path(input_speaker_sample_path)
-# new_parameters['f0'] = 160
-# modifier.generate_output(f"{basic_path}male_108_to_160_C.wav", new_parameters, short_latent=short_latent)
-# new_parameters['f0'] = 108.1
-# modifier.generate_output(f"{basic_path}male_108_to_108_C.wav", new_parameters, short_latent=short_latent)
-# new_parameters['f0'] = 80
-# modifier.generate_output(f"{basic_path}male_108_to_80_C.wav", new_parameters, short_latent=short_latent)
-
-# modifier = VoiceModifier(ParametersToShortLatentModelHandler, model_version="5")
-# short_latent, _ = retrieve_sh_latent_and_parameters_from_path(input_speaker_sample_path)
-# new_parameters['f0'] = 160
-# modifier.generate_output(f"{basic_path}male_108_to_160_A_12.wav", new_parameters)
-# new_parameters['f0'] = 108.1
-# modifier.generate_output(f"{basic_path}male_108_to_108_A_12.wav", new_parameters)
-# new_parameters['f0'] = 80
-# modifier.generate_output(f"{basic_path}male_108_to_80_A_12.wav", new_parameters)
-
-# change CHOSEN_PARAMETERS_KEYS in embedding_modifier/models/model.py to: ALL_KEYS from parameters retriever
-modifier = VoiceModifier(ParametersToShortLatentModelHandler, model_version="19")
-short_latent, _ = retrieve_sh_latent_and_parameters_from_path(input_speaker_sample_path)
-new_parameters['f0'] = 160
-modifier.generate_output(f"{basic_path}male_108_to_160_A_44.wav", new_parameters)
-new_parameters['f0'] = 108.1
-modifier.generate_output(f"{basic_path}male_108_to_108_A_44.wav", new_parameters)
-new_parameters['f0'] = 80
-modifier.generate_output(f"{basic_path}male_108_to_80_A_44.wav", new_parameters)
+modifier.generate_sample_from_parameters(parameters_from_path,
+                                         path="/app/tmp/voice_changer_tmp.wav",
+                                         phrase="Lubię ciastka z kremem",
+                                         # XTTS inference parameters
+                                         temperature=0.7,
+                                         length_penalty=1.0,
+                                         repetition_penalty=10.0,
+                                         top_k=50,
+                                         top_p=0.85,
+                                         do_sample=True,
+                                         num_beams=1,
+                                         speed=1.0,
+                                         enable_text_splitting=False
+                                         )

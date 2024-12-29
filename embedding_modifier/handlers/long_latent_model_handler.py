@@ -18,6 +18,9 @@ class LongLatentModelHandler(ModelHandler):
         super().__init__(LongLatentModifierModel, model_version, model_dir, device=device)
         self.parameters_noramlization_dict = load_normalization_dict(normalization_dict_path)
 
+    def convert_to_onnx(self):
+        raise NotImplementedError("ONNX conversion is not supported for this model")
+
     def generate_output(self, input_embedding, input_latent, expected_parameters, path=DEFAULT_PATH, phrase=DEFAULT_PHRASE, print_output_parameters=False):
 
         if isinstance(input_embedding, np.ndarray):

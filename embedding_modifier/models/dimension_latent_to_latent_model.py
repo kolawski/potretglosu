@@ -7,7 +7,10 @@ from embedding_modifier.models.model import Model
 class DimensionLatentToLatentModel(Model):
     def __init__(self, input_size=1024, output_size=32*1024, hidden_sizes=[8192], dropout=0.05):
         super(DimensionLatentToLatentModel, self).__init__()
-        
+
+        self.input_size = input_size
+        self.name = "DimensionLatentToLatentModel"
+
         # Hidden layers
         self.layers = nn.ModuleList()
         prev_size = input_size

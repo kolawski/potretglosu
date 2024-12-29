@@ -49,7 +49,4 @@ class ShortLatentToShortLatentModelHandler(ModelHandler):
         
         recreated_short_latent = self.modifier_model((short_latent_and_params,)).reshape(SHORT_LATENT_SHAPE) # tuple workaround for batch processing in model's forward
 
-        print(f"recreated_short_latent: {recreated_short_latent}")
-        print(f"recreated_short_latent shape: {recreated_short_latent.shape}") # REM
-
         return recreated_short_latent

@@ -7,7 +7,10 @@ from embedding_modifier.models.model import Model, CHOSEN_PARAMETERS_KEYS
 class ParametersToShortLatentModel(Model):
     def __init__(self, input_size=len(CHOSEN_PARAMETERS_KEYS), output_size=1536, hidden_sizes=[256], dropout=0.05):
         super(ParametersToShortLatentModel, self).__init__()
-        
+
+        self.input_size = input_size
+        self.name = "ParametersToShortLatentModel"
+
         # Hidden layers
         self.layers = nn.ModuleList()
         prev_size = input_size

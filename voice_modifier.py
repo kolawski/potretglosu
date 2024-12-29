@@ -1,72 +1,70 @@
-import csv
-import os
-
-from embedding_modifier.handlers.model_handler import DEFAULT_PHRASE
-from embedding_modifier.handlers.parameters_to_short_latent_model_handler import ParametersToShortLatentModelHandler
-from embedding_modifier.handlers.short_latent_to_short_latent_model_handler import ShortLatentToShortLatentModelHandler
-from embedding_modifier.models.model import CHOSEN_PARAMETERS_KEYS
-from embedding_modifier.model_utils.parameters_utils import prepare_parameters
-from settings import SHORT_LATENT_SHAPE
-from utils.embedding_converter import flat_to_torch
-from utils.exceptions import VoiceModifierError
-from utils.metrics_retriever import retrieve_metrics
+from database_management.database_managers.parameters_short_latents_database_manager import ParametersShortLatentsDatabaseManager
+from embedding_modifier.handlers.parameters_to_short_latent_model_handler import ParametersToShortLatentModelHandler, DEFAULT_PHRASE
+from settings import SAMPLE_PATH_DB_KEY
 from utils.parameters_extractor import ParametersExtractor
-# TODO zrobić utils do wyciągania ssim i mse z 2 wektorów
 
-DEFAULT_PATH = "/app/results/voice_modifier_results/"
+DEFAULT_TEMP_PATH = "/app/tmp/voice_changer_tmp.wav"
+PARAMETERS_TO_SHORT_LATENT_DEFAULT_MODEL_VERSION = "5"  # "5" is best 12-parameters version
 
 
-class VoiceModifier():
-    def __init__(self, handler, model_version, csv_save="voice_modifier_report.csv"):
-        self.handler = handler(model_version=model_version)
-        self._parameters_extractor = None
-        if csv_save is not None:
-            self.csv_file_path = DEFAULT_PATH + csv_save
-            if not os.path.exists(self.csv_file_path):
-                create_headers = True
-                mode = 'w'
-            else:
-                create_headers = False
-                mode = 'a'
-            self.csv_file = open(self.csv_file_path, mode=mode, newline='')
-            self.csv_writer = csv.writer(self.csv_file)
-            if create_headers:
-                self.csv_writer.writerow(['path', 'parameters_mse', 'short_latent_mse'])
-
-    def __del__(self):
-        self.csv_file.close()
+class VoiceModifier:
+    def __init__(self, parameters_to_short_latent_model_version=PARAMETERS_TO_SHORT_LATENT_DEFAULT_MODEL_VERSION):
+        self.parameters_to_short_latent_model_version = parameters_to_short_latent_model_version
+        
+        self._psldb = None
+        self._handler = None
+        self._extractor = None
 
     @property
-    def parameters_extractor(self):
-        if self._parameters_extractor is None:
-            self._parameters_extractor = ParametersExtractor()
-        return self._parameters_extractor
+    def extractor(self):
+        if self._extractor is None:
+            self._extractor = ParametersExtractor()
+        return self._extractor
 
-    def generate_output(self, save_path, expected_parameters, short_latent=None, phrase=DEFAULT_PHRASE):
-        recreated_short_latent = None
-        if isinstance(self.handler, ParametersToShortLatentModelHandler):
-            recreated_short_latent = self.handler.generate_output(expected_parameters, path=save_path, phrase=phrase)
-        if isinstance(self.handler, ShortLatentToShortLatentModelHandler):
-            if short_latent is None:
-                raise VoiceModifierError("Short latent is None")
-            recreated_short_latent = self.handler.generate_output(short_latent, expected_parameters, path=save_path, phrase=phrase)
+    @property
+    def psldb(self):
+        if self._psldb is None:
+            self._psldb = ParametersShortLatentsDatabaseManager()
+        return self._psldb
+    
+    @property
+    def handler(self):
+        if self._handler is None:
+            self._handler = ParametersToShortLatentModelHandler(model_version=self.parameters_to_short_latent_model_version)
+        return self._handler
 
-        if recreated_short_latent is None:
-            raise VoiceModifierError("Handler is not correct")
-        
-        parameters = self.parameters_extractor.extract_parameters(save_path)
+    def retrieve_parameters_from_embedding_latent(self, embedding, latent):
+        self.handler.xtts_handler.inference(embedding, latent, path=DEFAULT_TEMP_PATH)
+        return self.extractor.extract_parameters(DEFAULT_TEMP_PATH)
 
-        parameters = prepare_parameters(parameters, CHOSEN_PARAMETERS_KEYS, self.handler.parameters_noramlization_dict)
-        expected_parameters = prepare_parameters(expected_parameters, CHOSEN_PARAMETERS_KEYS, self.handler.parameters_noramlization_dict)
+    def retrieve_parameters_from_path(self, path):
+        record = self.psldb.get_record_by_key(SAMPLE_PATH_DB_KEY, path)
+        return record.to_dict()
 
-        parameters_mse = retrieve_metrics(expected_parameters, parameters, get_ssim=False)
-        if isinstance(self.handler, ShortLatentToShortLatentModelHandler):
-            short_latent = flat_to_torch(short_latent, SHORT_LATENT_SHAPE)
-            short_latent_mse = retrieve_metrics(short_latent, recreated_short_latent, get_ssim=False)
-        else:
-            short_latent_mse = "-", "-"
-
-        if self.csv_file is not None:
-            self.csv_writer.writerow([save_path, parameters_mse, short_latent_mse])
-
-        return parameters
+    def generate_sample_from_parameters(self,
+                                        parameters,
+                                        path=DEFAULT_TEMP_PATH,
+                                        phrase=DEFAULT_PHRASE,
+                                        # XTTS inference parameters
+                                        temperature=0.7,
+                                        length_penalty=1.0,
+                                        repetition_penalty=10.0,
+                                        top_k=50,
+                                        top_p=0.85,
+                                        do_sample=True,
+                                        num_beams=1,
+                                        speed=1.0,
+                                        enable_text_splitting=False):
+        return self.handler.generate_output(expected_parameters=parameters,
+                                            path=path, phrase=phrase,
+                                            return_short_latent=False,
+                                            return_output_parameters=True,
+                                            temperature=temperature,
+                                            length_penalty=length_penalty,
+                                            repetition_penalty=repetition_penalty,
+                                            top_k=top_k,
+                                            top_p=top_p,
+                                            do_sample=do_sample,
+                                            num_beams=num_beams,
+                                            speed=speed,
+                                            enable_text_splitting=enable_text_splitting)

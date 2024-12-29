@@ -9,3 +9,4 @@ runs/
 *.wav
 # To be changed when finel checkpoints are chosen
 *.pth
+*.onnx

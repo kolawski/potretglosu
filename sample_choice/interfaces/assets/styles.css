@@ -1,0 +1,76 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+    display: flex; /* Ustawienie centralnego widoku */
+    justify-content: center; /* Wyśrodkowanie poziome */
+    align-items: center; /* Wyśrodkowanie pionowe */
+    min-height: 100vh; /* Wysokość całego widoku */
+}
+
+.main-content {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    text-align: center; /* Wyśrodkowanie zawartości tekstowej */
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+button:hover {
+    background-color: #45a049;
+}
+
+.radio-group {
+    margin-top: 15px;
+}
+
+.audio-list {
+    list-style: none; /* Usuń punktory przed elementami listy */
+    padding: 0;
+    margin: 0;
+}
+
+.audio-list li {
+    display: flex; /* Wyświetl elementy listy w jednej linii */
+    align-items: center; /* Wyrównanie elementów w pionie */
+    justify-content: center; /* Centrowanie elementów w poziomie */
+    margin-bottom: 20px;
+    gap: 10px; /* Odstępy między elementami */
+}
+
+.audio-list li span {
+    flex: 1; /* Zajmij przestrzeń dla tekstu */
+    text-align: right; /* Wyrównanie tekstu do prawej */
+}
+
+.audio-list audio {
+    margin-right: 10px; /* Odstęp między odtwarzaczem a przyciskiem */
+    flex-shrink: 0; /* Zapobieganie skalowaniu odtwarzacza */
+}
+
+.audio-list button {
+    flex-shrink: 0; /* Zapobieganie skalowaniu przycisku */
+}
+
+.selected-sample {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.centered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}

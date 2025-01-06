@@ -1,8 +1,6 @@
 """Create a Dash app to visualize 3D t-SNE plots of the embedding and latent spaces."""
 import dash
 from dash import dcc, html, Input, Output
-import numpy as np
-import pandas as pd
 import plotly.graph_objects as go
 
 from database_management.database_managers.tsne_database_manager import (
@@ -111,6 +109,7 @@ class TsneVisualizer:
 
 if __name__ == "__main__":
     # Lista ścieżek do wyróżnionych próbek
+    # Są wybrane przez algorytm szukający najbardziej odległych punktów w oryginalnej przestrzeni
     highlighted_paths = [
         "/app/Resources/ready_audio_samples/common_voice_pl_22072821.wav",
         "/app/Resources/ready_audio_samples/common_voice_pl_25483212.wav",

@@ -7,6 +7,6 @@ wav2vec2_checkpoints/
 runs/
 .vscode/
 *.wav
-# To be changed when finel checkpoints are chosen
+# To be changed when final checkpoints are chosen
 *.pth
 *.onnx
